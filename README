@@ -1,0 +1,27 @@
+These directories contain links between the AIMMS modeling system (http://www.aimms.com) and some open source solvers.
+
+For requirements and installation instructions of the AIMMS modeling system see the file INSTALL in the AIMMSlinks
+base directory.
+
+For requirements and installation instructions of each solver see the file INSTALL in the corresponding solver directory, i.e.,
+* Cbc   : CbcAimms
+* Ipopt : IpoptAimms
+
+For license information see the file LICENSE.
+
+=== Introduction ===
+
+Currently for the following solvers links are available:
+* Cbc   :  Coin Branch and Cut code
+* Ipopt :  Interior Point Optimizer
+
+The links of these solvers with AIMMS are known to work under Windows (32 & 64 bits).
+
+=== Options ===
+
+For general solver options that can be set see the AIMMS documentation, in particular the AIMMS Help.
+
+For specific solver options that can be set, see 
+- the CBC documentation,
+- the IPOPT documentation.
+
