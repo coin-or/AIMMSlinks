@@ -1,7 +1,7 @@
 This release only supports building the solver interfaces to CBC on 32-bits Windows platforms.
 
-The instructions below assume that you are using the included Microsoft Developer Studio projects to build
-the interfaced DLLs.
+The instructions below assume that you are using the included Microsoft Visual Studio (MSVC) projects
+to build the interfaced DLLs.
 
 For installation of an AIMMS system, see the file INSTALL in the AIMMSlinks directory.
 
@@ -19,18 +19,18 @@ For installation of an AIMMS system, see the file INSTALL in the AIMMSlinks dire
 
 Obtain the CBC source code via subversion inside the CbcAimms directory by using, e.g., 
 
-   svn co https://projects.coin-or.org/svn/Cbc/stable/2.2 coin-Cbc
+   svn co https://projects.coin-or.org/svn/Cbc/stable/2.4 coin-Cbc
 
 Alternatively one can obtain the source code from the directory,
 
    http://www.coin-or.org/download/source/Cbc/
 
-and downloading a file of the form Cbc-X.Y.Z.zip, e.g., Cbc-2.2.2.zip. Unzip this file to
+and downloading a file of the form Cbc-X.Y.Z.zip, e.g., Cbc-2.3.2.zip. Unzip this file to
 a directory coin-Cbc inside the CbcAimms directory.
 
-IMPORTANT NOTE:
-The Windows installations of CBC 2.3 and 2.4 contain errors and therefore it is recommended
-to use CBC 2.2!
+NOTE:
+The MSVC v8 project file for CBC 2.3 contains some errors and therefore it is recommended to use
+the MSVC v9 project file for CBC 2.3 or to use CBC 2.2 or 2.4.
 
 (For installation instructions for CBC see also https://projects.coin-or.org/Cbc.)
 
@@ -53,14 +53,14 @@ After obtaining the CBC source code the directory structure of the CbcAimms dire
      - src
 
 Open the solution file Cbc.sln in the CbcAimms\coin-Cbc\Cbc\MSVisualStudio\v8 directory using using Microsoft
-Visual Studio Interactive Development Environment(IDE) version 8 or higher, and build the following CBC components:
+Visual Studio Interactive Development Environment (IDE) version 8 or higher, and build the following CBC components:
 cbcSolve, libCbc, libCgl, libClp, libCoinUtils, libOsi, libOsiClp. Note: if you build component cbcSolve then
 automatically all other components are build.
 
 
 == 2. Build the AIMMS-CBC dll ==
 
-Build the code using Microsoft Visual Studio Interactive Development Environment(IDE) version 8 or higher by
+Build the code using Microsoft Visual Studio Interactive Development Environment (IDE) version 8 or higher by
 opening the project file libAimmsCbc.vcproj inside the CbcAimms\MSVisualStudio\v8 directory.
 
 The AIMMS-CBC dll built by default is for an AIMMS ASCII version. To build a dll for AIMMS Unicode, change

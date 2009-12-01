@@ -1,6 +1,6 @@
 This release only supports building the solver interfaces to IPOPT on 32-bits and 64-bits Windows platforms.
 
-The instructions below assume that you are using the included Microsoft Developer Studio projects to build
+The instructions below assume that you are using the included Microsoft Visual Studio projects to build
 the interfaced DLLs.
 
 For installation of an AIMMS system, see the file INSTALL in the AIMMSlinks directory.
@@ -50,7 +50,7 @@ See http://www.coin-or.org/Ipopt/documentation/node14.html for downloading exter
 By default the AIMMS-IPOPT link only uses the linear solver MUMPS included in the IPOPT dll. To add other linear
 solvers you should configure the AimmsIpoptConfig.h file in the src directory.
 
-Build the code using Microsoft Visual Studio Interactive Development Environment(IDE) version 8 or higher by
+Build the code using Microsoft Visual Studio Interactive Development Environment (IDE) version 8 or higher by
 opening the project file libAimmsIpopt.vcproj inside the IpoptAimms\MSVisualStudio\v8 directory.
 
 The AIMMS-IPOPT dll built by default is for an AIMMS ASCII version. To build a dll for AIMMS Unicode, change

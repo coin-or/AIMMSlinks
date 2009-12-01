@@ -1,8 +1,8 @@
 This release only supports building the solver interfaces to IPOPT on 32-bits and 64-bits Windows platforms,
 and to CBC on 32-bits Windows platforms.
 
-The instructions below assume that you are using the included Microsoft Developer Studio projects to build
-the interfaced DLLs.
+The instructions below assume that you are using the included Microsoft Visual Studio projects to build the
+interfaced DLLs.
 
 = Main installation steps =
 
