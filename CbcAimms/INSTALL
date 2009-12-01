@@ -1,0 +1,107 @@
+This release only supports building the solver interfaces to CBC on 32-bits Windows platforms.
+
+The instructions below assume that you are using the included Microsoft Visual Studio (MSVC) projects
+to build the interfaced DLLs.
+
+For installation of an AIMMS system, see the file INSTALL in the AIMMSlinks directory.
+
+= Main steps to build the AIMMS-CBC link =
+
+ 1. Download and install CBC.
+ 2. Build the AIMMS-CBC dll.
+ 3. Add CBC to your AIMMS system.
+ 4. Test CBC in AIMMS.
+
+
+= Detailed instructions =
+
+== 1. Download and install CBC ==
+
+Obtain the CBC source code via subversion inside the CbcAimms directory by using, e.g., 
+
+   svn co https://projects.coin-or.org/svn/Cbc/stable/2.4 coin-Cbc
+
+Alternatively one can obtain the source code from the directory,
+
+   http://www.coin-or.org/download/source/Cbc/
+
+and downloading a file of the form Cbc-X.Y.Z.zip, e.g., Cbc-2.3.2.zip. Unzip this file to
+a directory coin-Cbc inside the CbcAimms directory.
+
+NOTE:
+The MSVC v8 project file for CBC 2.3 contains some errors and therefore it is recommended to use
+the MSVC v9 project file for CBC 2.3 or to use CBC 2.2 or 2.4.
+
+(For installation instructions for CBC see also https://projects.coin-or.org/Cbc.)
+
+After obtaining the CBC source code the directory structure of the CbcAimms directory should be:
+
+   - CbcAimms
+     - coin-Cbc
+       - BuildTools
+       - Cbc
+       - Cgl
+       - Clp
+       - CoinUtils
+       - Data
+       - doxydoc
+       - Osi
+       - ThirdParty
+       - Vol
+     - MSVisualStudio
+       - v8
+     - src
+
+Open the solution file Cbc.sln in the CbcAimms\coin-Cbc\Cbc\MSVisualStudio\v8 directory using using Microsoft
+Visual Studio Interactive Development Environment (IDE) version 8 or higher, and build the following CBC components:
+cbcSolve, libCbc, libCgl, libClp, libCoinUtils, libOsi, libOsiClp. Note: if you build component cbcSolve then
+automatically all other components are build.
+
+
+== 2. Build the AIMMS-CBC dll ==
+
+Build the code using Microsoft Visual Studio Interactive Development Environment (IDE) version 8 or higher by
+opening the project file libAimmsCbc.vcproj inside the CbcAimms\MSVisualStudio\v8 directory.
+
+The AIMMS-CBC dll built by default is for an AIMMS ASCII version. To build a dll for AIMMS Unicode, change
+the value of 'Character Set' inside the project file (in Configuration Properties - General) into
+'Use Unicode Character Set'.
+
+
+== 3. Add CBC to AIMMS ==
+
+Copy the libAimmsCbc.dll file to the Solvers directory of your AIMMS installation. After starting up AIMMS, add
+CBC to the Solvers Configuration:
+- Open the Solver Configuration dialog box (under Settings);
+- Click Add;
+- At the Solver DLL field, select the 'libAimmsCbc.dll' file using the File Selection dialog box;
+- Click OK to accept the new solver.
+- Set CBC as the default LP and MIP solver, and click OK to close the Solver Configuration dialog box.
+
+
+== 4. Test CBC in AIMMS ==
+
+After adding CBC to the solver configuration, you can test CBC by using some of the AIMMS examples.
+
+- Example Farm Planning (LP):
+  - Open the FarmPlanning.prj project.
+  - Click Open Demo Page.
+  - Open progress window by pressing CTRL+P.
+  - Click Optimize. The progress window should contain the following information (amongst others):
+  
+     SOLVER            : CBC
+       Best Solution   : 49949.98588
+       Program Status  : Optimal
+       Solver Status   : Normal completion
+
+- Example Diet Problem (MIP):
+  - Open the DietProblem.prj project.
+  - Click Open Demo Page.
+  - Open progress window by pressing CTRL+P.
+  - Click Solve. The progress window should contain the following information (amongst others):
+  
+     SOLVER            : CBC
+       Best Solution   : 24.6
+       Program Status  : Optimal
+       Solver Status   : Normal completion
+

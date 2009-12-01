@@ -1,0 +1,38 @@
+This release only supports building the solver interfaces to IPOPT on 32-bits and 64-bits Windows platforms,
+and to CBC on 32-bits Windows platforms.
+
+The instructions below assume that you are using the included Microsoft Visual Studio projects to build the
+interfaced DLLs.
+
+= Main installation steps =
+
+ 1. Install an AIMMS system.
+ 2. Build the AIMMS-IPOPT link.
+ 3. Build the AIMMS-CBC link.
+
+
+= Detailed instructions =
+
+== 1. Installation of an AIMMS system ==
+
+While it is possible to build the solvers with AIMMS links without having an AIMMS system available, an AIMMS system
+will be needed to use them. You need AIMMS version 3.10 of higher.
+
+You can download AIMMS at http://www.aimms.com/downloads/aimms/download-aimms. You should have a valid AIMMS license
+to be able to use AIMMS after installation. If you do not have a valid AIMMS license, you can request a one-time free
+AIMMS Trial License or use a Free Student License.
+
+The Trial License is a 30-day unrestricted trial license.
+
+The Student License is limited in the number of identifiers (200) and the size of the optimization models (300x300),
+allowing students to create and run small AIMMS models on their own computer.
+
+
+== 2. Build the AIMMS-IPOPT link ==
+
+For instructions for building libAimmsIpopt.dll, the AIMMS-IPOPT link, see the file INSTALL in the IpoptAimms directory.
+
+
+== 3. Build the AIMMS-CBC link ==
+
+For instructions for building libAimmsCbc.dll, the AIMMS-CBC link, see the file INSTALL in the CbcAimms directory.
