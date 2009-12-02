@@ -53,7 +53,7 @@
 // Unfortunately there is no definition of the CBC version in the CBC package. Therefore we have
 // to update CBC_VERSION below whenever CBC itself is updated.
 
-#define CBC_VERSION           "2.2"
+#define CBC_VERSION           "2.4"
 #define CBC_STATUS_FILE_NAME  "cbc.sta"
 #define CBC_LOG_FILE_NAME     "cbc.log"
 
