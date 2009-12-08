@@ -29,8 +29,11 @@ and downloading a file of the form Cbc-X.Y.Z.zip, e.g., Cbc-2.3.2.zip. Unzip thi
 a directory coin-Cbc inside the CbcAimms directory.
 
 NOTE:
-The MSVC v8 project file for CBC 2.3 contains some errors and therefore it is recommended to use
-the MSVC v9 project file for CBC 2.3 or to use CBC 2.2 or 2.4.
+It is recommended to use CBC 2.4 (MSVC v8 or v9) or CBC 2.2 (MSVC v8). The MSVC v8 project file
+for CBC 2.3 contains some errors and therefore it is recommended to use the MSVC v9 project file
+for CBC 2.3. When opening the MSVC v9 project file for CBC 2.3 you might get an error message
+saying that the project file ‘..\Vol\MSVisualStudio\v9\libVol\libVol\vcproj’ could not be loaded,
+but this error message can be ignored since libVol is not needed.
 
 (For installation instructions for CBC see also https://projects.coin-or.org/Cbc.)
 

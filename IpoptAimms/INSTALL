@@ -34,14 +34,17 @@ IpoptAimms directory should be:
        - v8
      - src
 
-The IPOPT dll includes the public domain solver MUMPS, but using the "library loader" a Pardiso DLL or a
-DLL with Harwell subroutines (which the user has to compile) can be loaded at runtime.
+The IPOPT dll is built using the third party components BLAS and LAPACK. The IPOPT dll includes the public
+domain solver MUMPS which makes use of the matrix ordering algorithms implemented in METIS.
 
-The third party software for Pardiso and Harwell is released under different licenses than IPOPT. For this
-reason that code is not distributed together with the IPOPT packages and therefore you have to go through
-the hassle of obtaining it yourself. Keep in mind that it is YOUR RESPONSIBILITY to ensure that your downloading
+Using the "library loader", a Pardiso DLL or a DLL with HSL subroutines (which the user has to compile) can
+be loaded at runtime. The third party software for Pardiso and HSL is released under different licenses than
+IPOPT. For this reason that code is not distributed together with the IPOPT packages and therefore you have
+to go through the hassle of obtaining it yourself.
+
+See the prerequisites for IPOPT (at http://www.coin-or.org/Ipopt/documentation/node6.html) for more information
+on these third party components. Keep in mind that it is YOUR RESPONSIBILITY to ensure that your downloading
 and usage of the third party components conforms with their licenses.
-
 See http://www.coin-or.org/Ipopt/documentation/node14.html for downloading external code.
 
 
