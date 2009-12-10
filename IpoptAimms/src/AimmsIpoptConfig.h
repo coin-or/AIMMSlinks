@@ -23,7 +23,7 @@
 
 
 /* Define to 1 if MA27 is available */
-// #define MA27_IS_AVAILABLE 1
+#define MA27_IS_AVAILABLE 1
 
 /* Define to 1 if MA57 is available */
 // #define MA57_IS_AVAILABLE 1
@@ -32,7 +32,7 @@
 #define MUMPS_IS_AVAILABLE 1
 
 /* Define to 1 if Pardiso is available */
-// #define PARDISO_IS_AVAILABLE 1
+#define PARDISO_IS_AVAILABLE 1
 
 /* Define to 1 if you are using the parallel version of Pardiso */
 // #define PARDISO_PARALLEL_IS_AVAILABLE 1
