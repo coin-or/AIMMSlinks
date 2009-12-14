@@ -1,4 +1,4 @@
-This release only supports building the solver interfaces to CBC on 32-bits Windows platforms.
+This release only supports building the solver interfaces to CBC on 32-bits and 64-bits Windows platforms.
 
 The instructions below assume that you are using the included Microsoft Visual Studio (MSVC) projects
 to build the interfaced DLLs.
@@ -59,6 +59,13 @@ Open the solution file Cbc.sln in the CbcAimms\coin-Cbc\Cbc\MSVisualStudio\v8 di
 Visual Studio Interactive Development Environment (IDE) version 8 or higher, and build the following CBC components:
 cbcSolve, libCbc, libCgl, libClp, libCoinUtils, libOsi, libOsiClp. Note: if you build component cbcSolve then
 automatically all other components are build.
+
+To build CBC for Windows 64 bits requires some extra work because it is not available in the configuration manager
+of the solution file Cbc.sln. But using the following steps it is fairly easy to build CBC for Windows 64 bits.
+After opening Cbc.sln do:
+- From menu select: Build - Configuration Manager
+- In 'Active solution platform' dialog select: <New...>
+- In 'Type or select the new platform' dialog select: x64, and click OK.
 
 
 == 2. Build the AIMMS-CBC dll ==
