@@ -841,14 +841,16 @@ int CbcMathProgramInstance::cbc_set_options( std::list<std::string>& opt_list )
     
     cbc_model->setAllowableFractionGap( cbc_mip_relative_gap );
     
-    // Set MIP option for cutoff.
+    // Set MIP option for cutoff. CBC treats cutoff as if problem is a minimization problem.
     
     if ( cbc_mip_cutoff == AOSI_NA_REP ) {
-    	// CBC treats cutoff as if problem is a minimization problem.
-    	
     	dval = 1.0e30;
     } else {
-    	dval = cbc_mip_cutoff;
+    	if ( cbc_handle . direction == DIRECTION_MAX ) {
+    		dval = cbc_handle . obj_constant - cbc_mip_cutoff;
+    	} else {
+    		dval = cbc_mip_cutoff - cbc_handle . obj_constant;
+    	}
     }
     cbc_model->setCutoff( dval );
 	
