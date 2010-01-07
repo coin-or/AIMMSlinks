@@ -2807,9 +2807,9 @@ int CbcMathProgramInstance::cbc_get_solution_info_mip( void )
 // The function cbc_actually_call_solver()
 int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& opt_list )
 {
-	char       dir[MAX_DIR_LEN], file_name[1024];
+	char       dir[MAX_DIR_LEN], file_name[1024], buf[256];
     _LONG_T    len;
-    int        i, opt_list_length;
+    int        i, opt_list_length, res = 0;
     FILE      *sta_file = NULL;
     
     assert( cbc_args );
@@ -2860,15 +2860,31 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
 	cbc_args[i++]="-solve";
 	cbc_args[i++]="-quit";
 	
-	// Finally call the main solver.
+	// Finally call the main solver. Try to catch exceptions like CBC getting out of memory during
+	// (MIP) solve.
 	
-	CbcMain1( opt_list_length+3, cbc_args, *cbc_model );
+	try {
+		CbcMain1( opt_list_length+3, cbc_args, *cbc_model );
+	} catch ( std::exception &e ) {
+		res = 1;   // Indicating error
+		
+		cbc_handle . model_status  = MODELSTAT_NO_SOLUTION;
+		cbc_handle . solver_status = SOLVERSTAT_TERMINATED;
+		cbc_handle . objval = AOSI_NA_REP;
+		
+		if ( strcmp( e.what(), "bad allocation" ) ) {
+			sprintf( buf, "CBC error: %s\0", e.what() );
+		} else {
+			sprintf( buf, "CBC error: Out of memory during solve\0" );
+		}
+		m_gen->PassMessage( AOSI_PRIO_ALWAYS, buf );
+	}
 	
 	if ( sta_file ) {
-    	fclose( sta_file );
-    }
+		fclose( sta_file );
+	}
 	
-	return 0;
+	return res;
 }
 
 
