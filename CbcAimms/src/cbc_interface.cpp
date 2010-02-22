@@ -702,12 +702,10 @@ void CbcMathProgramInstance::cbc_print_deleted_rows( int nrows, int *rows )
 
 // The function cbc_print_retrieved_matrix_elements()
 void CbcMathProgramInstance::cbc_print_retrieved_matrix_elements( int *row, int *col, double *value,
-                                                                  int upd )
+                                                                  int upd, int nelem )
 {
-    _LONG_T   i, nelem, len;
+    _LONG_T   i, len;
     char      colname[64], rowname[64];
-    
-    nelem = ( upd ) ? cbc_handle . nonzeros_upd : cbc_handle . nonzeros;
 
     if ( cbc_opt_tracing ) {
         for ( i=0; i<nelem; i++ ) {
@@ -1364,37 +1362,12 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
     
     // Get column data from AIMMS.
 
-    if ( ncols != m_mp->GetColumnData( /* is_update */ 0, ncols, &number, 
-                                       lb, col_lev, ub, obj_coef,
-                                       /* prior     */ NULL,
-                                       /* no_elm    */ (_LONG_T *) col_no_elm,
-                                       /* no_q_elm  */ NULL,
-                                       (_LONG_T *) col_flag ) ) {
-        cbc_error( "Retrieving column values failed" );
-        m_mp->FreeMemory( model_area );
-        return 1;
-    }
-    
-    // Get row data from AIMMS.
-    
-    if ( nrows != m_mp->GetRowData( /* is_update */ 0, nrows, &number,
-                                    row_lo, row_lev, row_up,
-                                    /* no_elm    */ NULL,
-                                    /* fv        */ NULL,
-                                    (_LONG_T *) row_flag ) ) {
-        cbc_error( "Retrieving row values failed" );
-        m_mp->FreeMemory( model_area );
-        return 1;
-    }
-    
-    // Get matrix elements from AIMMS.
-
-    if ( nelem != m_mp->GetMatrixData( /* is_update */ 0, nelem, (_LONG_T *) row,
-                                       (_LONG_T *) col, coef, /* nlflag */ NULL ) ) {
-        cbc_error( "Retrieving matrix non-zeros failed" );
-        m_mp->FreeMemory( model_area );
-        return 1;
-    }
+    res = m_mp->GetColumnData( /* is_update */ 0, ncols, &number, 
+                               lb, col_lev, ub, obj_coef,
+                               /* prior     */ NULL,
+                               /* no_elm    */ (_LONG_T *) col_no_elm,
+                               /* no_q_elm  */ NULL,
+                               (_LONG_T *) col_flag );
     
 #ifdef DEBUG
     cbc_print_retrieved_columns( lb, ub, /* col_lev */ NULL, obj_coef, number, col_flag );
@@ -1403,21 +1376,56 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
         m_mp->FreeMemory( model_area );
         return 1;
     }
+#endif   
     
+    if ( res != ncols ) {
+        cbc_error( "Retrieving column values failed" );
+        m_mp->FreeMemory( model_area );
+        return 1;
+    }
+    
+    // Get row data from AIMMS.
+    
+    res = m_mp->GetRowData( /* is_update */ 0, nrows, &number,
+                            row_lo, row_lev, row_up,
+                            /* no_elm    */ NULL,
+                            /* fv        */ NULL,
+                            (_LONG_T *) row_flag );
+
+#ifdef DEBUG
     cbc_print_retrieved_rows( row_lo, row_up, row_lev, number, row_flag );
     
     if ( cbc_check_row_bounds( row_lo, row_up, nrows ) ) {
         m_mp->FreeMemory( model_area );
         return 1;
     }
+#endif
+    
+    if ( res != nrows ) {
+        cbc_error( "Retrieving row values failed" );
+        m_mp->FreeMemory( model_area );
+        return 1;
+    }
+    
+    // Get matrix elements from AIMMS.
 
-    cbc_print_retrieved_matrix_elements( row, col, coef, /* upd */ 0 );
+    res = m_mp->GetMatrixData( /* is_update */ 0, nelem, (_LONG_T *) row,
+                               (_LONG_T *) col, coef, /* nlflag */ NULL );
+    
+#ifdef DEBUG
+    cbc_print_retrieved_matrix_elements( row, col, coef, /* upd */ 0, res );
 
     if ( cbc_check_matrix_elements( coef, nelem ) ) {
         m_mp->FreeMemory( model_area );
         return 1;
     }
 #endif
+    
+    if ( res != nelem ) {
+        cbc_error( "Retrieving matrix non-zeros failed" );
+        m_mp->FreeMemory( model_area );
+        return 1;
+    }
 
 	for ( i=0; i<ncols; i++ ) {
 		if ( col_flag[i] & AOSI_FLAGS_IS_INTEGER ) {
@@ -1736,7 +1744,7 @@ int CbcMathProgramInstance::cbc_update_model( void )
     }
     
 #ifdef DEBUG
-    cbc_print_retrieved_matrix_elements( row, col, coef, /* upd */ 1 );
+    cbc_print_retrieved_matrix_elements( row, col, coef, /* upd */ 1, nelem_upd );
 
     if ( cbc_check_matrix_elements( coef, nelem_upd ) ) {
         m_mp->FreeMemory( model_area );
@@ -2669,6 +2677,7 @@ int CbcMathProgramInstance::cbc_get_solution_info_lp( void )
     
 #ifdef DEBUG
     if ( cbc_opt_tracing ) {
+    	fprintf( cbc_logfile, "Solve number    : %d\n",  cbc_solve_no                );
         fprintf( cbc_logfile, "Model status    : %ld\n",  cbc_handle . model_status  );
         fprintf( cbc_logfile, "Solver status   : %ld\n",  cbc_handle . solver_status );
         fprintf( cbc_logfile, "Objective value : %.5f\n", cbc_handle . objval        );
@@ -2781,6 +2790,7 @@ int CbcMathProgramInstance::cbc_get_solution_info_mip( void )
     
 #ifdef DEBUG
     if ( cbc_opt_tracing ) {
+    	fprintf( cbc_logfile, "Solve number    : %d\n",   cbc_solve_no               );
         fprintf( cbc_logfile, "Model status    : %ld\n",  cbc_handle . model_status  );
         fprintf( cbc_logfile, "Solver status   : %ld\n",  cbc_handle . solver_status );
         fprintf( cbc_logfile, "Objective value : %.5f\n", cbc_handle . objval        );
@@ -2797,9 +2807,9 @@ int CbcMathProgramInstance::cbc_get_solution_info_mip( void )
 // The function cbc_actually_call_solver()
 int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& opt_list )
 {
-	char       dir[MAX_DIR_LEN], file_name[1024];
+	char       dir[MAX_DIR_LEN], file_name[1024], buf[256];
     _LONG_T    len;
-    int        i, opt_list_length;
+    int        i, opt_list_length, res = 0;
     FILE      *sta_file = NULL;
     
     assert( cbc_args );
@@ -2850,15 +2860,31 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
 	cbc_args[i++]="-solve";
 	cbc_args[i++]="-quit";
 	
-	// Finally call the main solver.
+	// Finally call the main solver. Try to catch exceptions like CBC getting out of memory during
+	// (MIP) solve.
 	
-	CbcMain1( opt_list_length+3, cbc_args, *cbc_model );
+	try {
+		CbcMain1( opt_list_length+3, cbc_args, *cbc_model );
+	} catch ( std::exception &e ) {
+		res = 1;   // Indicating error
+		
+		cbc_handle . model_status  = MODELSTAT_NO_SOLUTION;
+		cbc_handle . solver_status = SOLVERSTAT_TERMINATED;
+		cbc_handle . objval = AOSI_NA_REP;
+		
+		if ( strcmp( e.what(), "bad allocation" ) ) {
+			sprintf( buf, "CBC error: %s\0", e.what() );
+		} else {
+			sprintf( buf, "CBC error: Out of memory during solve\0" );
+		}
+		m_gen->PassMessage( AOSI_PRIO_ALWAYS, buf );
+	}
 	
 	if ( sta_file ) {
-    	fclose( sta_file );
-    }
+		fclose( sta_file );
+	}
 	
-	return 0;
+	return res;
 }
 
 
