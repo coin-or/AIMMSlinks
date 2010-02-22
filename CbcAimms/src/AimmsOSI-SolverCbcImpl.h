@@ -270,7 +270,7 @@ private:
                                    _LONG_T number, int *row_flag );
     void cbc_print_row_updates( int *rows, double *row_lo, double *row_up, int nrows );
     void cbc_print_deleted_rows( int nrows, int *rows );
-    void cbc_print_retrieved_matrix_elements( int *row, int *col, double *value, int upd );
+    void cbc_print_retrieved_matrix_elements( int *row, int *col, double *value, int upd, int nelem );
     void cbc_print_retrieved_SOS( int nsos, char *sostype, int *soslen, double *sospri,
                                   int *sosind, double *sosref );
     int  cbc_check_col_bounds( double *lower, double *upper, int ncols );

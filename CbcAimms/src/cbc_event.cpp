@@ -157,6 +157,7 @@ MyEventHandler3::event(CbcEvent whichEvent)
 	    
 	    res = cmpi->cbc_aimms_callback( AOSI_CB_INT_SOLUTION );
 	    if ( res == AOSI_CB_RET_INTR ) {
+	    	cmpi->cbc_user_interrupt = true;
 	    	return stop;
 	    }
 	}
@@ -170,6 +171,7 @@ MyEventHandler3::event(CbcEvent whichEvent)
 	    	
 	    	res = cmpi->cbc_aimms_callback( AOSI_CB_ITERATION );
 	    	if ( res == AOSI_CB_RET_INTR ) {
+	    		cmpi->cbc_user_interrupt = true;
 	    		return stop;
 	    	}
     	}
@@ -298,6 +300,7 @@ MyEventHandler::event(Event whichEvent)
     	     ( cbc_current->iter >= cbc_current->cb_iter ) ) {
 	    	res = cmpi->cbc_aimms_callback( AOSI_CB_ITERATION );
 	    	if ( res == AOSI_CB_RET_INTR ) {
+	    		cmpi->cbc_user_interrupt = true;
 	    		return 5;   // Stop
 	    	}
     	}

@@ -65,6 +65,7 @@
 #define AOSI_CAPAB2_BRANCH_CB      ISolverInfo::CAPAB2_BRANCH_CB   
 #define AOSI_CAPAB2_RELOAD_MM      ISolverInfo::CAPAB2_RELOAD_MM   
 #define AOSI_CAPAB2_SEP_SPEC_ROW   ISolverInfo::CAPAB2_SEP_SPEC_ROW
+#define AOSI_CAPAB2_PASS_THROUGH   ISolverInfo::CAPAB2_PASS_THROUGH
 
 #define AOSI_COMPL_PATH            ISolverInfo::COMPL_PATH
 #define AOSI_COMPL_KNITRO          ISolverInfo::COMPL_KNITRO
@@ -323,6 +324,7 @@
 #define   AOSI_CB_NODE                  IAimmsMathProgramCallback::CB_NODE       
 #define   AOSI_CB_NR_NODES              IAimmsMathProgramCallback::CB_NR_NODES
 #define   AOSI_CB_NR_BR_NODES           IAimmsMathProgramCallback::CB_NR_BR_NODES
+#define   AOSI_CB_NR_NODES_LEFT         IAimmsMathProgramCallback::CB_NR_NODES_LEFT
 #define   AOSI_CB_IMAX                  IAimmsMathProgramCallback::CB_IMAX       
 
 #define   AOSI_CB_OBJ                   IAimmsMathProgramCallback::CB_OBJ        
