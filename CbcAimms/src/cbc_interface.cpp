@@ -445,17 +445,19 @@ int CbcMathProgramInstance::cbc_aimms_callback( int callback_type )
         lp_best = obj_best;
     }
  
-    cb_int[ AOSI_CB_MODEL_STAT  ] = mod_status;
-    cb_int[ AOSI_CB_SOLVER_STAT ] = SOLVERSTAT_UNKNOWN;
-    cb_int[ AOSI_CB_ITER        ] = cbc_handle . iter;
-    cb_int[ AOSI_CB_SOLVE_TIME  ] = m_mp->GetTime() - cbc_start_time;  // 1/100'th of a sec
-    cb_int[ AOSI_CB_NODE        ] = -1;
-    cb_int[ AOSI_CB_NR_NODES    ] = -1;
+    cb_int[ AOSI_CB_MODEL_STAT    ] = mod_status;
+    cb_int[ AOSI_CB_SOLVER_STAT   ] = SOLVERSTAT_UNKNOWN;
+    cb_int[ AOSI_CB_ITER          ] = cbc_handle . iter;
+    cb_int[ AOSI_CB_SOLVE_TIME    ] = m_mp->GetTime() - cbc_start_time;  // 1/100'th of a sec
+    cb_int[ AOSI_CB_NODE          ] = -1;
+    cb_int[ AOSI_CB_NR_NODES      ] = -1;
+    cb_int[ AOSI_CB_NR_BR_NODES   ] = -1;
+    cb_int[ AOSI_CB_NR_NODES_LEFT ] = -1;
  
-    cb_dbl[ AOSI_CB_OBJ         ] = cbc_obj_val;
-    cb_dbl[ AOSI_CB_OBJ_BEST    ] = obj_best;
-    cb_dbl[ AOSI_CB_LP_BEST     ] = lp_best;
-    cb_dbl[ AOSI_CB_NODE_OBJ    ] = AOSI_NA_REP;
+    cb_dbl[ AOSI_CB_OBJ           ] = cbc_obj_val;
+    cb_dbl[ AOSI_CB_OBJ_BEST      ] = obj_best;
+    cb_dbl[ AOSI_CB_LP_BEST       ] = lp_best;
+    cb_dbl[ AOSI_CB_NODE_OBJ      ] = AOSI_NA_REP;
 	
     res = m_callback->RunCallback( callback_type, cb_int, cb_dbl );
     
@@ -2850,7 +2852,7 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
 	
 	// Collect options and add them to list of arguments for CbcMain1.
 	
-	opt_list_length = opt_list.size();
+	opt_list_length = (int) opt_list.size();
 	
 	cbc_args[0] = "CBC";
 	i = 1;

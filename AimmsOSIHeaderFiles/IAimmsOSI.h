@@ -865,6 +865,7 @@ public:
             CB_NODE,
             CB_NR_NODES,
             CB_NR_BR_NODES,
+            CB_NR_NODES_LEFT,
             CB_IMAX
         };
         
