@@ -3223,7 +3223,8 @@ void CbcSolverInfo::GetHelpFile(
 	// There if no help file for CBC (yet).
 	
 //	strncpy( filename, "aimmscbc.chm", size );
-//	filename[ size - 1] = '\0';
+//	filename[ size - 1 ] = '\0';
+	filename[ 0 ] = '\0';
 }
 
 
