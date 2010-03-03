@@ -4,6 +4,7 @@ AimmsOSIHeaderFiles/IAimmsOSI.h -text
 AimmsOSIHeaderFiles/aimmsosi_compat.h -text
 CbcAimms/AUTHORS -text
 CbcAimms/INSTALL -text
+CbcAimms/MSVisualStudio/v8/libAimmsCbc.sln -text
 CbcAimms/MSVisualStudio/v8/libAimmsCbc.vcproj -text
 CbcAimms/src/AimmsOSI-SolverCbcImpl.h -text
 CbcAimms/src/cbc_event.cpp -text
@@ -15,6 +16,7 @@ CbcAimms/src/cbc_options.h -text
 /INSTALL -text
 IpoptAimms/AUTHORS -text
 IpoptAimms/INSTALL -text
+IpoptAimms/MSVisualStudio/v8/libAimmsIpopt.sln -text
 IpoptAimms/MSVisualStudio/v8/libAimmsIpopt.vcproj -text
 IpoptAimms/src/AimmsIpoptConfig.h -text
 IpoptAimms/src/AimmsIpoptOptions.cpp -text
