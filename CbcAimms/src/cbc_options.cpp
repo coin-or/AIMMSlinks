@@ -341,7 +341,7 @@ static char *akeyw_node_select[] = {
     "Depth first",
     "Up branch fewest infeasibilities",
     "Down branch fewest infeasibilities",
-    "Up branch depth first"
+    "Up branch depth first",
     "Down branch depth first" };
 static char *ckeyw_node_select[] = {
     "hybrid",
@@ -349,7 +349,7 @@ static char *ckeyw_node_select[] = {
     "depth",
     "upfewest",
     "downfewest",
-    "updepth"
+    "updepth",
     "downdepth" };
 
 static char *akeyw_postslv_cont[] = {
