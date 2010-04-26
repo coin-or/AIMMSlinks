@@ -32,7 +32,7 @@ public:
 	/// Clone
 	virtual CbcEventHandler * clone() const ;
 	//@}
-	CbcMathProgramInstance * MyEventHandler3::GetCmpi();
+	CbcMathProgramInstance * GetCmpi();
 
 protected:
 	CbcMathProgramInstance *cmpi_;
@@ -62,7 +62,7 @@ public:
 	/// Clone
 	virtual ClpEventHandler * clone() const ;
 	//@}
-	CbcMathProgramInstance * MyEventHandler::GetCmpi();
+	CbcMathProgramInstance * GetCmpi();
 
 protected:
 	CbcMathProgramInstance *cmpi_;
