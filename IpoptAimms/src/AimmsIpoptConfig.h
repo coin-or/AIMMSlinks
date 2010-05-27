@@ -26,7 +26,7 @@
 #define MA27_IS_AVAILABLE 1
 
 /* Define to 1 if MA57 is available */
-// #define MA57_IS_AVAILABLE 1
+#define MA57_IS_AVAILABLE 1
 
 /* Define to 1 if MUMPS is available */
 #define MUMPS_IS_AVAILABLE 1
@@ -35,7 +35,7 @@
 #define PARDISO_IS_AVAILABLE 1
 
 /* Define to 1 if you are using the parallel version of Pardiso */
-// #define PARDISO_PARALLEL_IS_AVAILABLE 1
+#define PARDISO_PARALLEL_IS_AVAILABLE 1
 
 /* Define to 1 if TAUCS is available */
 // #define TAUCS_IS_AVAILABLE 1
@@ -53,7 +53,7 @@
 
 
 /* Define to 1 if MC19 is available */
-// #define MC19_IS_AVAILABLE 1
+#define MC19_IS_AVAILABLE 1
 
 
 #endif /* __AIMMSIPOPTCONFIG_H__ */
