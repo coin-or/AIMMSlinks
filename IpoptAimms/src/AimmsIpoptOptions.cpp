@@ -89,6 +89,16 @@ static int  ipopt_int_opt_low[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_SCALE_ON_DEMAND			   */	  0,
 #endif
 
+#ifdef MA57_IS_AVAILABLE
+	/* IPOPT_OPT_MA57_PIVOT_ORDER			   */	  0,			// CET: Added 04-23-2010
+	/* IPOPT_OPT_MA57_BLOCK_SIZE			   */	  1,			// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_NODE_AMALGAMATION		   */	  1,			// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_SCALING_FLAG			   */	  0,			// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_SMALL_PIVOT_FLAG		   */	  0,			// CET: Added 04-28-2010
+
+
+#endif
+
 #ifdef MUMPS_IS_AVAILABLE
 	/* IPOPT_OPT_MUMPS_MEM_PERCENT			   */	  0,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_PERMUTING_SCALING	   */	  0,			// CET: Added 8-22-2009
@@ -156,6 +166,17 @@ static int  ipopt_int_opt_def[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_SCALE_ON_DEMAND			   */	  1,
 #endif
 
+
+#ifdef MA57_IS_AVAILABLE
+	/* IPOPT_OPT_MA57_PIVOT_ORDER			   */	  5,			// CET: Added 04-23-2010
+	/* IPOPT_OPT_MA57_BLOCK_SIZE			   */	 16,			// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_NODE_AMALGAMATION		   */	 16,			// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_SCALING_FLAG			   */	  1,			// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_SMALL_PIVOT_FLAG		   */	  0,			// CET: Added 04-28-2010
+
+#endif
+
+
 #ifdef MUMPS_IS_AVAILABLE
 	/* IPOPT_OPT_MUMPS_MEM_PERCENT			   */  1000,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_PERMUTING_SCALING	   */	  7,			// CET: Added 8-22-2009
@@ -206,7 +227,6 @@ static int  ipopt_int_opt_up[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_LINEAR_SYSTEM_SCALING		   */	  1,			// CET: Added 8-24-2009
 #endif
 
-
 	/* IPOPT_OPT_JAC_C_CONSTANT				   */	  1,
 	/* IPOPT_OPT_JAC_D_CONSTANT				   */	  1,
 	/* IPOPT_OPT_HESSIAN_CONSTANT			   */     1,
@@ -223,6 +243,16 @@ static int  ipopt_int_opt_up[ IPOPT_OPT_INT_MAX ] =
 #ifdef MC19_IS_AVAILABLE
 	/* IPOPT_OPT_SCALE_ON_DEMAND			   */	  1,
 #endif
+
+#ifdef MA57_IS_AVAILABLE
+	/* IPOPT_OPT_MA57_PIVOT_ORDER			   */	  5,			// CET: Added 04-23-2010
+	/* IPOPT_OPT_MA57_BLOCK_SIZE			   */	  IPOPT_MAXINT,	// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_NODE_AMALGAMATION		   */	  IPOPT_MAXINT,	// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_SCALING_FLAG			   */	  1,			// CET: Added 04-28-2010
+	/* IPOPT_OPT_MA57_SMALL_PIVOT_FLAG		   */	  1,			// CET: Added 04-28-2010
+
+#endif
+
 
 #ifdef MUMPS_IS_AVAILABLE
 	/* IPOPT_OPT_MUMPS_MEM_PERCENT			   */	  IPOPT_MAXINT,	// CET: Added 8-22-2009
@@ -319,6 +349,8 @@ static double  ipopt_dbl_opt_low[ IPOPT_OPT_DBL_MAX ] =
 #ifdef MA57_IS_AVAILABLE
 	/* IPOPT_OPT_MA57_MAXIMUM_PIVOT_TOLERANCE  */   0.0 ,				// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PIVOT_TOLERANCE		   */   0.0 ,				// CET: Updated 4-30-2009
+	/* IPOPT_OPT_MA57_PRE_ALLOC				   */	1.0 ,				// CET: Added 04-23-2010
+
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
@@ -403,6 +435,8 @@ static double  ipopt_dbl_opt_def[ IPOPT_OPT_DBL_MAX ] =
 #ifdef MA57_IS_AVAILABLE
 	/* IPOPT_OPT_MA57_MAXIMUM_PIVOT_TOLERANCE  */   0.0001 ,			// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PIVOT_TOLERANCE		   */   1.0e-8 ,			// CET: Updated 4-30-2009
+	/* IPOPT_OPT_MA57_PRE_ALLOC				   */	3.0 ,				// CET: Added 04-23-2010
+
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
@@ -488,6 +522,8 @@ static double  ipopt_dbl_opt_up[ IPOPT_OPT_DBL_MAX ] =
 #ifdef MA57_IS_AVAILABLE
 	/* IPOPT_OPT_MA57_MAXIMUM_PIVOT_TOLERANCE  */   1.0 ,				// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PIVOT_TOLERANCE		   */   1.0 ,				// CET: Updated 4-30-2009
+	/* IPOPT_OPT_MA57_PRE_ALLOC				   */	IPOPT_INF ,			// CET: Added 04-23-2010
+
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
@@ -822,17 +858,17 @@ static const char* aimms_keyw_linear_solver[] =
 	
 #ifdef MA27_IS_AVAILABLE 
 	#if defined (MA57_IS_AVAILABLE) || defined (PARDISO_IS_AVAILABLE) || defined (WSMP_IS_AVAILABLE)
-    "Harwell_routine_MA27",
+    "HSL_routine_MA27",			// CET: 04-23-2010.  Modified from "Harwell_routine_MA27".
 	#else
-	"Harwell_routine_MA27"
+	"HSL_routine_MA27"			// CET: 04-23-2010.  Modified from "Harwell_routine_MA27".
 	#endif
 #endif
 
 #ifdef MA57_IS_AVAILABLE
 	#if defined (PARDISO_IS_AVAILABLE) || defined (WSMP_IS_AVAILABLE)
-    "Harwell_routine_MA57",
+    "HSL_routine_MA57",			// CET:  04-23-2010.  Modified from "Harwell_routine_MA57".
 	#else
-    "Harwell_routine_MA57"
+    "HSL_routine_MA57"			// CET: 04-23-2010.  Modified from "Harwell_routine_MA57".
 	#endif
 #endif
 
@@ -991,6 +1027,32 @@ static ipopt_option_rec  ipopt_int_options[] =
 	  "Linear_scaling_done_only_if_required"      , "linear_scaling_on_demand"    ,
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 #endif
+
+#ifdef MA57_IS_AVAILABLE
+
+	{ IPOPT_OPT_MA57_PIVOT_ORDER                  , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 04-23-2010
+	  "MA57_pivot_order"					      , "ma57_pivot_order"           ,
+	  0 , NULL                                    , NULL                         },
+
+	{ IPOPT_OPT_MA57_BLOCK_SIZE                   , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 04-28-2010
+	  "MA57_block_size"					          , "ma57_block_size"            ,
+	  0 , NULL                                    , NULL                         },
+
+	{ IPOPT_OPT_MA57_NODE_AMALGAMATION            , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 04-28-2010
+	  "MA57_node_amalgamation_parameter"		  , "ma57_node_amalgamation" ,
+	  0 , NULL                                    , NULL                         },
+
+	{ IPOPT_OPT_MA57_SCALING_FLAG                 , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 04-28-2010
+	  "MA57_scaling"							  , "ma57_automatic_scaling"      ,
+	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
+
+	{ IPOPT_OPT_MA57_SMALL_PIVOT_FLAG             , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 04-28-2010
+	  "MA57_small_pivot_parameter"				  , "ma57_small_pivot_flag"       ,
+	  0 , NULL                                    , NULL                         },
+
+#endif
+
+
 
 #ifdef MUMPS_IS_AVAILABLE
 	{ IPOPT_OPT_MUMPS_MEM_PERCENT                 , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 8-22-2009
@@ -1291,6 +1353,11 @@ static ipopt_option_rec  ipopt_dbl_options[] =
 	{ IPOPT_OPT_MA57_PIVOT_TOLERANCE			  , IPOPT_CAT_LINEAR_SOLVER  ,  0,		
 	  "MA57_pivot_tolerance"					  , "ma57_pivtol"                ,
 	  0 , NULL                                    , NULL                         },
+
+	{ IPOPT_OPT_MA57_PRE_ALLOC					  , IPOPT_CAT_LINEAR_SOLVER  ,  0,		// CET: Added 04-23-2010
+	  "MA57_work_space_memory_safety_factor"	  , "ma57_pre_alloc"             ,
+	  0 , NULL                                    , NULL                         },
+
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
