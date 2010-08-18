@@ -155,18 +155,18 @@ static int  cbc_int_opt_up[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_BARRIER_CROSSOVER             */   1,
 /* CBC_OPT_BARRIER_SCALING               */   1,
 /* CBC_OPT_CLIQUE_CUTS                   */   4,
-/* CBC_OPT_COMBINE_SOLUTIONS             */   2,
+/* CBC_OPT_COMBINE_SOLUTIONS             */   3,
 /* CBC_OPT_CRASH                         */   3,
 /* CBC_OPT_CUT_DEPTH                     */   999999,
 /* CBC_OPT_CUT_PASSES_ROOT_NODE          */   999999,
 /* CBC_OPT_CUT_PASSES_TREE               */   999999,
-/* CBC_OPT_DUAL_PIVOT                    */   2,
-/* CBC_OPT_FEASIBILITY_PUMP              */   2,
+/* CBC_OPT_DUAL_PIVOT                    */   1,
+/* CBC_OPT_FEASIBILITY_PUMP              */   3,
 /* CBC_OPT_FEASIBILITY_PUMP_PASSES       */   10000,
 /* CBC_OPT_FLOW_COVER_CUTS               */   4,
 /* CBC_OPT_GLOBAL_CUT_CONTROL            */   4,
 /* CBC_OPT_GOMORY_CUTS                   */   5,
-/* CBC_OPT_GREEDY_HEURISTIC              */   2,
+/* CBC_OPT_GREEDY_HEURISTIC              */   3,
 /* CBC_OPT_HEURISTICS                    */   1,
 /* CBC_OPT_IDIOT_CRASH                   */   999999,
 /* CBC_OPT_KNAPSACK_CUTS                 */   4,
@@ -186,13 +186,13 @@ static int  cbc_int_opt_up[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_POSTSOLVE_CONT                */   2,
 /* CBC_OPT_POSTSOLVE_INT                 */   2,
 /* CBC_OPT_PRESOLVE                      */   2,
-/* CBC_OPT_PRIMAL_PIVOT                  */   5,
+/* CBC_OPT_PRIMAL_PIVOT                  */   4,
 /* CBC_OPT_PROBING_CUTS                  */   4,
 /* CBC_OPT_REDUCE_AND_SPLIT_CUTS         */   4,
 /* CBC_OPT_REFACTOR_INTERVAL             */   999999,
 /* CBC_OPT_RESIDUAL_CAPACITY_CUTS        */   4,
 /* CBC_OPT_RINS_HEURISTIC                */   2,
-/* CBC_OPT_ROUNDING_HEURISTIC            */   2,
+/* CBC_OPT_ROUNDING_HEURISTIC            */   3,
 /* CBC_OPT_SCALING                       */   2,
 /* CBC_OPT_SIFTING                       */   5000000,
 /* CBC_OPT_STATUS_FILE                   */   1,
@@ -202,7 +202,7 @@ static int  cbc_int_opt_up[ CBC_OPT_INT_MAX ] = {
 #endif
 /* CBC_OPT_TRUST_PSEUDO_COSTS            */   2000000,
 /* CBC_OPT_TWO_MIR_CUTS                  */   4,
-/* CBC_OPT_VARIABLE_SELECTION            */   5
+/* CBC_OPT_VARIABLE_SELECTION            */   2
 };
 
 
@@ -274,7 +274,6 @@ static char *ckeyw_cuts[] = {
 
 static char *akeyw_dual_pivot[] = {
     "Automatic",
-    "Dantzig",
     "Partial",
     "Steepest" };
 
@@ -296,11 +295,13 @@ static char *ckeyw_gomory_cuts[] = {
 static char *akeyw_heuristic[] = {
     "Off",
     "On",
-    "Before presolve" };
+    "Before",
+    "Both" };
 static char *ckeyw_heuristic[] = {
     "off",
     "on",
-    "do" };
+    "before",
+    "both" };
 
 static char *akeyw_lp_method[] = {
     "Primal simplex",
@@ -370,7 +371,6 @@ static char *akeyw_presolve[] = {
 static char *akeyw_primal_pivot[] = {
     "Automatic",
     "Exact",
-    "Dantzig",
     "Partial",
     "Steepest",
     "Change",
@@ -390,17 +390,11 @@ static char *akeyw_scaling[] = {
 static char *akeyw_var_select[] = {
     "Off",
     "Absolute cost",
-    "Column order",
-    "Binary first",
-    "Binary last",
-    "Length" };
+    "Column order" };
 static char *ckeyw_var_select[] = {
     "off",
     "priorities",
-    "columnOrder",
-    "01first",
-    "01last",
-    "length" };
+    "columnOrder" };
 
 
 // The tables of all the CBC options.
@@ -487,7 +481,7 @@ static cbc_option_rec  cbc_int_options[] = {
 { CBC_OPT_RESIDUAL_CAPACITY_CUTS      , CBC_CAT_MIP_CUTS , 0 , 1 , akeyw_cuts        , ckeyw_cuts       ,
   0, "Residual_capacity_cuts"            , "-residualCapacityCuts"                                      },
 { CBC_OPT_RINS_HEURISTIC              , CBC_CAT_MIP_HEUR , 0 , 1 , akeyw_rins        , NULL             ,
-  0, "RINS_Heuristic"                    , "-Rins"                                                      },
+  0, "RINS_heuristic"                    , "-Rins"                                                      },
 { CBC_OPT_ROUNDING_HEURISTIC          , CBC_CAT_MIP_HEUR , 0 , 1 , akeyw_heuristic   , ckeyw_heuristic  ,
   0, "Rounding_heuristic"                , "-roundingHeuristic"                                         },
 { CBC_OPT_SCALING                     , CBC_CAT_GENERAL  , 0 , 1 , akeyw_scaling     , NULL             ,
@@ -517,7 +511,7 @@ static cbc_option_rec  cbc_dbl_options[] = {
 { CBC_OPT_DUAL_FEAS_TOL               , CBC_CAT_GENERAL  , 0 , 0 , NULL, NULL ,
   0, "Dual_feasibility_tolerance"        , "-dualTolerance"                   },
 { CBC_OPT_INCREMENT                   , CBC_CAT_MIP      , 0 , 0 , NULL, NULL ,
-  0, "Increment"                        , "-increment"                        },
+  0, "Increment"                         , "-increment"                       },
 { CBC_OPT_INTEGRALITY                 , CBC_CAT_MIP      , 0 , 0 , NULL, NULL ,
   0, "Integrality"                       , "-integerTolerance"                },
 { CBC_OPT_OBJ_SCALE_FACTOR            , CBC_CAT_GENERAL  , 0 , 0 , NULL, NULL ,

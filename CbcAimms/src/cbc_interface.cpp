@@ -3220,11 +3220,8 @@ void CbcSolverInfo::GetHelpFile(
     char    *filename,         // filename must be of length < 512
     _LONG_T  size )            // size of the buffer including '\0'
 {
-	// There if no help file for CBC (yet).
-	
-//	strncpy( filename, "aimmscbc.chm", size );
-//	filename[ size - 1 ] = '\0';
-	filename[ 0 ] = '\0';
+	strncpy( filename, "aimmscbc24.chm", size );
+	filename[ size - 1 ] = '\0';
 }
 
 
