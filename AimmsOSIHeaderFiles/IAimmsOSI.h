@@ -3,7 +3,7 @@
 // Copyright (C) 2001-2009  Paragon Decision Technology B.V.
 // All Rights Reserved.
 //
-// This code is published under the Common Public License.
+// This code is published under the Eclipse Public License.
 //
 // Last Modified : August 28, 2009
 //

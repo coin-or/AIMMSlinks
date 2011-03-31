@@ -1,6 +1,6 @@
 // Copyright (C) 2009 Paragon Decision Technology B.V. and others.
 // All Rights Reserved.
-// This code is published under the Common Public License.
+// This code is published under the Eclipse Public License.
 //
 // $Id$
 //
