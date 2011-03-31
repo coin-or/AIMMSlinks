@@ -299,6 +299,7 @@ private:
 	int  cbc_create_optimization_task( void );
 	void cbc_init_solve( _LONG_T *int_param, double *dbl_param, int update, int type );
 	int  cbc_get_model_type( _LONG_T *int_param );
+	double cbc_calculate_objective( void );
 	int  cbc_get_solution_info_lp( void );
 	int  cbc_get_solution_info_mip( void );
 	int  cbc_actually_call_solver( std::list<std::string>& opt_list );

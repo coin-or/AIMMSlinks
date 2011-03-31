@@ -36,7 +36,7 @@ static const char* ipopt_category[] =
     "Initialization",
     "Line_search",	
 	"Linear_solver",
-	"Multiplier_updates",
+	"Multipliers",
 	"NLP",
     "NLP_scaling",
 	"Output",
@@ -71,7 +71,6 @@ static int  ipopt_int_opt_low[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_LINEAR_SYSTEM_SCALING		   */	  0,			// CET: Added 8-24-2009
 #endif
 
-
 	/* IPOPT_OPT_JAC_C_CONSTANT				   */	  0,
 	/* IPOPT_OPT_JAC_D_CONSTANT				   */	  0,
 	/* IPOPT_OPT_HESSIAN_CONSTANT			   */     0,
@@ -95,8 +94,6 @@ static int  ipopt_int_opt_low[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_MA57_NODE_AMALGAMATION		   */	  1,			// CET: Added 04-28-2010
 	/* IPOPT_OPT_MA57_SCALING_FLAG			   */	  0,			// CET: Added 04-28-2010
 	/* IPOPT_OPT_MA57_SMALL_PIVOT_FLAG		   */	  0,			// CET: Added 04-28-2010
-
-
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
@@ -104,7 +101,6 @@ static int  ipopt_int_opt_low[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_MUMPS_PERMUTING_SCALING	   */	  0,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_PIVOT_ORDER			   */	  0,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_SCALING				   */	 -2,			// CET: Added 8-22-2009
-
 #endif
 
 	/* IPOPT_OPT_MAX_NUM_ITER				   */	  0,
@@ -148,7 +144,6 @@ static int  ipopt_int_opt_def[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_LINEAR_SYSTEM_SCALING		   */	  1,			// CET: Added 8-24-2009
 #endif
 
-
 	/* IPOPT_OPT_JAC_C_CONSTANT				   */	  0,
 	/* IPOPT_OPT_JAC_D_CONSTANT				   */	  0,
 	/* IPOPT_OPT_HESSIAN_CONSTANT			   */     0,
@@ -166,25 +161,20 @@ static int  ipopt_int_opt_def[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_SCALE_ON_DEMAND			   */	  1,
 #endif
 
-
 #ifdef MA57_IS_AVAILABLE
 	/* IPOPT_OPT_MA57_PIVOT_ORDER			   */	  5,			// CET: Added 04-23-2010
 	/* IPOPT_OPT_MA57_BLOCK_SIZE			   */	 16,			// CET: Added 04-28-2010
 	/* IPOPT_OPT_MA57_NODE_AMALGAMATION		   */	 16,			// CET: Added 04-28-2010
 	/* IPOPT_OPT_MA57_SCALING_FLAG			   */	  1,			// CET: Added 04-28-2010
 	/* IPOPT_OPT_MA57_SMALL_PIVOT_FLAG		   */	  0,			// CET: Added 04-28-2010
-
 #endif
-
 
 #ifdef MUMPS_IS_AVAILABLE
 	/* IPOPT_OPT_MUMPS_MEM_PERCENT			   */  1000,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_PERMUTING_SCALING	   */	  7,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_PIVOT_ORDER			   */	  7,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_SCALING				   */	  7,			// CET: Added 8-22-2009
-
 #endif
-
 
 	/* IPOPT_OPT_MAX_NUM_ITER				   */  3000,
 	/* IPOPT_OPT_ACCEPTABLE_ITER			   */	 15,			// CET: Added 8-23-2009
@@ -250,16 +240,13 @@ static int  ipopt_int_opt_up[ IPOPT_OPT_INT_MAX ] =
 	/* IPOPT_OPT_MA57_NODE_AMALGAMATION		   */	  IPOPT_MAXINT,	// CET: Added 04-28-2010
 	/* IPOPT_OPT_MA57_SCALING_FLAG			   */	  1,			// CET: Added 04-28-2010
 	/* IPOPT_OPT_MA57_SMALL_PIVOT_FLAG		   */	  1,			// CET: Added 04-28-2010
-
 #endif
-
 
 #ifdef MUMPS_IS_AVAILABLE
 	/* IPOPT_OPT_MUMPS_MEM_PERCENT			   */	  IPOPT_MAXINT,	// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_PERMUTING_SCALING	   */	  7,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_PIVOT_ORDER			   */	  7,			// CET: Added 8-22-2009
 	/* IPOPT_OPT_MUMPS_SCALING				   */	  7,			// CET: Added 8-22-2009
-
 #endif
 
 	/* IPOPT_OPT_MAX_NUM_ITER				   */	  IPOPT_MAXINT,
@@ -302,9 +289,10 @@ static double  ipopt_dbl_opt_low[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_MU_LINEAR_DECREASE_FACTOR	   */	0.0,				// CET: Added 8-24-2009
 	/* IPOPT_OPT_MU_SUPERLINEAR_DECREASE_POWER */	1.0,				// CET: Added 8-24-2009
 
-	/* IPOPT_OPT_RECALC_Y_FEAS_TOL			   */	0.0,				// CET: Added 8-24-2009
+	/* IPOPT_OPT_RECALC_Y_FEAS_TOL			   */	1.0e-10,				// CET: Added 8-24-2009
 
 	/* IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_CTOL			*/	0.0,		// CET: Added 8-24-2009
+	/* IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_YTOL			*/	1.0e-10,
 	/* IPOPT_OPT_SOFT_RESTO_PDERROR_REDUCTION_FACTOR	*/	0.0,		// CET: Added 8-24-2009
 	/* IPOPT_OPT_REQUIRED_INFEASIBILITY_REDUCTION		*/	0.0,		// CET: Added 8-24-2009
 	/* IPOPT_OPT_BOUND_MULT_RESET_THRESHOLD				*/	0.0,		// CET: Added 8-24-2009
@@ -318,25 +306,23 @@ static double  ipopt_dbl_opt_low[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_PERTURB_DEC_FACT			   */	0.0,				// CET: Added 8-24-2009
 	/* IPOPT_OPT_JACOBIAN_REGULARIZATION_VALUE */	0.0,				// CET: Added 8-24-2009
 
-	/* IPOPT_OPT_DERIVATIVE_TEST_PERTURBATION  */	0.0,				// CET: Added 8-24-2009
-	/* IPOPT_OPT_DERIVATIVE_TEST_TOL		   */	0.0,				// CET: Added 8-24-2009
+	/* IPOPT_OPT_DERIVATIVE_TEST_PERTURBATION  */	1.0e-10,				// CET: Added 8-24-2009
+	/* IPOPT_OPT_DERIVATIVE_TEST_TOL		   */	1.0e-10,				// CET: Added 8-24-2009
 	/* IPOPT_OPT_POINT_PERTURBATION_RADIUS	   */	0.0,				// CET: Added 8-24-2009
-
-
 
 	/* IPOPT_OPT_ABSOLUTE_BOUND_DISTANCE       */   0.0 ,				// CET: Updated 4-28-2009
 	/* IPOPT_OPT_BARRIER_INITIAL_VALUE         */   0.0 ,				// CET: Updated 4-28-2009
 	/* IPOPT_OPT_BOUND_MULTIPLIERS_INIT_VAL    */   0.0 ,				// CET: Updated 4-28-2009
 	/* IPOPT_OPT_BOUNDS_RELAXATION_FACTOR      */   0.0 ,				// CET: Checked 4-28-2009
-	/* IPOPT_OPT_COMPLEMENTARITY_ACCEP_TOL     */   0.0 ,				// CET: Updated 4-28-2009
-	/* IPOPT_OPT_COMPLEMENTARITY_TOLERANCE     */   0.0 ,				// CET: Updated 4-28-2009
-	/* IPOPT_OPT_CONSTRAINT_VIOL_ACCEP_TOL     */   0.0 ,				// CET: Updated 4-28-2009
-	/* IPOPT_OPT_CONSTRAINT_VIOL_TOLERANCE     */   0.0 ,				// CET: Updated 4-28-2009
-	/* IPOPT_OPT_CONVERGENCE_ACCEP_TOL         */   0.0 ,				// CET: Updated 4-28-2009
-	/* IPOPT_OPT_CONVERGENCE_TOLERANCE         */   0.0 ,				// CET: Updated 4-28-2009
-	/* IPOPT_OPT_DIVERGING_ITERATES_TOL		   */	0.0 ,				// CET: Added 4-28-2009
-	/* IPOPT_OPT_DUAL_INF_ACCEP_TOL            */   0.0 ,				// CET: Updated 4-28-2009
-	/* IPOPT_OPT_DUAL_INF_TOLERANCE            */   0.0 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_COMPLEMENTARITY_ACCEP_TOL     */   1.0e-10 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_COMPLEMENTARITY_TOLERANCE     */   1.0e-10 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_CONSTRAINT_VIOL_ACCEP_TOL     */   1.0e-10 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_CONSTRAINT_VIOL_TOLERANCE     */   1.0e-10 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_CONVERGENCE_ACCEP_TOL         */   1.0e-10 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_CONVERGENCE_TOLERANCE         */   1.0e-10 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_DIVERGING_ITERATES_TOL		   */	1.0e-10 ,				// CET: Added 4-28-2009
+	/* IPOPT_OPT_DUAL_INF_ACCEP_TOL            */   1.0e-10 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_DUAL_INF_TOLERANCE            */   1.0e-10 ,				// CET: Updated 4-28-2009
 
 #ifdef MA27_IS_AVAILABLE
 	/* IPOPT_OPT_MA27_MAXIMUM_PIVOT_TOLERANCE  */   0.0 ,				// CET: Updated 4-30-2009
@@ -350,7 +336,6 @@ static double  ipopt_dbl_opt_low[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_MA57_MAXIMUM_PIVOT_TOLERANCE  */   0.0 ,				// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PIVOT_TOLERANCE		   */   0.0 ,				// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PRE_ALLOC				   */	1.0 ,				// CET: Added 04-23-2010
-
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
@@ -358,7 +343,7 @@ static double  ipopt_dbl_opt_low[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_MUMPS_PIVOT_TOLERANCE		   */   0.0 ,				// CET: Updated 4-30-2009
 #endif
 	
-	/* IPOPT_OPT_NLP_SCALING_MAXIMUM_GRAD      */   0.0 ,				// CET: Updated 4-28-2009
+	/* IPOPT_OPT_NLP_SCALING_MAXIMUM_GRAD      */   1.0e-10 ,				// CET: Updated 4-28-2009
 	/* IPOPT_OPT_OBJ_CHANGE_ACCEP_TOL		   */   0.0 ,				// CET: Added 4-30-2009
 	/* IPOPT_OPT_OBJECTIVE_SCALING_FACTOR      */   -IPOPT_INF ,		// CET: Checked 4-28-2009
 	/* IPOPT_OPT_RELATIVE_BOUND_DISTANCE       */   0.0	,				// CET: Updated 4-28-2009
@@ -391,6 +376,7 @@ static double  ipopt_dbl_opt_def[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_RECALC_Y_FEAS_TOL			   */	1.0e-6,				// CET: Added 8-24-2009
 
 	/* IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_CTOL			*/	0.001,		// CET: Added 8-24-2009
+	/* IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_YTOL			*/	1.0e8,
 	/* IPOPT_OPT_SOFT_RESTO_PDERROR_REDUCTION_FACTOR	*/	0.9999,		// CET: Added 8-24-2009
 	/* IPOPT_OPT_REQUIRED_INFEASIBILITY_REDUCTION		*/	0.9,		// CET: Added 8-24-2009
 	/* IPOPT_OPT_BOUND_MULT_RESET_THRESHOLD				*/	1000.0,		// CET: Added 8-24-2009
@@ -407,7 +393,6 @@ static double  ipopt_dbl_opt_def[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_DERIVATIVE_TEST_PERTURBATION  */	1.0e-8,				// CET: Added 8-24-2009
 	/* IPOPT_OPT_DERIVATIVE_TEST_TOL		   */	0.0001,				// CET: Added 8-24-2009
 	/* IPOPT_OPT_POINT_PERTURBATION_RADIUS	   */	10.0,				// CET: Added 8-24-2009
-
 
 	/* IPOPT_OPT_ABSOLUTE_BOUND_DISTANCE       */   0.01 ,				// CET: Checked 4-28-2009
 	/* IPOPT_OPT_BARRIER_INITIAL_VALUE         */   0.1 ,				// CET: Checked 4-28-2009
@@ -429,14 +414,12 @@ static double  ipopt_dbl_opt_def[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_MA27_LIW_INIT_FACTOR		   */   5.0 ,				// CET: Added 8-22-2009
 	/* IPOPT_OPT_MA27_LA_INIT_FACTOR		   */   5.0 ,				// CET: Added 8-22-2009
 	/* IPOPT_OPT_MA27_MEMINC_FACTOR			   */	10.0 ,				// CET: Added 8-22-2009
-
 #endif
 
 #ifdef MA57_IS_AVAILABLE
 	/* IPOPT_OPT_MA57_MAXIMUM_PIVOT_TOLERANCE  */   0.0001 ,			// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PIVOT_TOLERANCE		   */   1.0e-8 ,			// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PRE_ALLOC				   */	3.0 ,				// CET: Added 04-23-2010
-
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
@@ -477,6 +460,7 @@ static double  ipopt_dbl_opt_up[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_RECALC_Y_FEAS_TOL			   */	IPOPT_INF,			// CET: Added 8-24-2009
 
 	/* IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_CTOL			*/	IPOPT_INF,	// CET: Added 8-24-2009
+	/* IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_YTOL			*/	IPOPT_INF,
 	/* IPOPT_OPT_SOFT_RESTO_PDERROR_REDUCTION_FACTOR	*/	IPOPT_INF,	// CET: Added 8-24-2009
 	/* IPOPT_OPT_REQUIRED_INFEASIBILITY_REDUCTION		*/	1.0,		// CET: Added 8-24-2009
 	/* IPOPT_OPT_BOUND_MULT_RESET_THRESHOLD				*/	IPOPT_INF,	// CET: Added 8-24-2009
@@ -493,8 +477,6 @@ static double  ipopt_dbl_opt_up[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_DERIVATIVE_TEST_PERTURBATION  */	IPOPT_INF,			// CET: Added 8-24-2009
 	/* IPOPT_OPT_DERIVATIVE_TEST_TOL		   */	IPOPT_INF,			// CET: Added 8-24-2009
 	/* IPOPT_OPT_POINT_PERTURBATION_RADIUS	   */	IPOPT_INF,			// CET: Added 8-24-2009
-
-
 
 	/* IPOPT_OPT_ABSOLUTE_BOUND_DISTANCE       */   IPOPT_INF ,			// CET: Checked 4-28-2009
 	/* IPOPT_OPT_BARRIER_INITIAL_VALUE         */   IPOPT_INF ,			// CET: Checked 4-28-2009
@@ -523,7 +505,6 @@ static double  ipopt_dbl_opt_up[ IPOPT_OPT_DBL_MAX ] =
 	/* IPOPT_OPT_MA57_MAXIMUM_PIVOT_TOLERANCE  */   1.0 ,				// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PIVOT_TOLERANCE		   */   1.0 ,				// CET: Updated 4-30-2009
 	/* IPOPT_OPT_MA57_PRE_ALLOC				   */	IPOPT_INF ,			// CET: Added 04-23-2010
-
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
@@ -660,23 +641,6 @@ static const char* ipopt_keyw_no_yes[] =
 
 
 
-// AIMMS keywords for Ipopt option "check_derivatives_for_naninf" - indicates whether to check for Nan/Inf in
-// derivative matrices.
-static const char* aimms_keyw_deriv_check_NaN[] = 
-{
-	"Don't_check",						// Default
-	"Check_Jacobian_and_Hessian_for_NaN_and_Inf"
-};
-
-// The corresponding Ipopt options
-static const char* ipopt_keyw_deriv_check_NaN[] = 
-{
-	"no",								// Default
-	"yes"
-};
-
-
-
 // AIMMS keywords for Ipopt option "derivative_test_print_all" - indicates whether information for all estimated
 // derivatives should be printed.
 static const char* aimms_keyw_print_deriv[] = 
@@ -793,23 +757,6 @@ static const char* ipopt_keyw_hess[] =
 
 
 
-// AIMMS keywords for Ipopt option "accept_every_trial_step"
-static const char* aimms_keyw_accept_trial_step[] = 
-{
-	"Don't_arbitrarily_accept_the_full_step",			// Default
-	"Always_accept_the_full_step"
-};
-
-// The corresponding Ipopt options
-static const char* ipopt_keyw_accept_trial_step[] = 
-{
-	"no",												// Default
-	"yes"
-};
-
-
-
-
 // CET: Added 8-24-2009
 // AIMMS keywords for Ipopt option "bound_mult_init_method" - initialization method for bound multipliers
 static const char* aimms_keyw_bound_mult_init_method[] = 
@@ -826,22 +773,30 @@ static const char* ipopt_keyw_bound_mult_init_method[] =
 };
 
 
+
 // CET: Added 8-24-2009
 // AIMMS keywords for Ipopt option "linear_system_scaling" - method for scaling the linear system
-static const char* aimms_keyw_linear_system_scaling[] = 
+static const char* aimms_keyw_linear_scaling_method[] = 
 {
     "None",						
     "MC19"						// Default
 };
 
 // The equivalent Ipopt options
-static const char* ipopt_keyw_linear_system_scaling[] = 
+static const char* ipopt_keyw_linear_scaling_method[] = 
 {
     "none",					
     "mc19"						// Default
 };
 
 
+
+// AIMMS keywords for Ipopt option "linear_scaling_on_demand"
+static const char* aimms_keyw_linear_scaling[] = 
+{
+    "Always",					// Default	
+    "If solutions seem not good"
+};
 
 
 
@@ -938,41 +893,38 @@ static ipopt_option_rec  ipopt_int_options[] =
 	//CET: Updated integer options for Ipopt 3.7.
 	
 	{ IPOPT_OPT_ACCEPT_EVERY_TRIAL_STEP           , IPOPT_CAT_LINE_SEARCH    ,  0,
-	  "Always_accept_the_full_trial_step"		  , "accept_every_trial_step"    ,
-	  1 , aimms_keyw_accept_trial_step            , ipopt_keyw_accept_trial_step },
+	  "Always_accept_full_trial_step"		      , "accept_every_trial_step"    ,
+	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 
 	{ IPOPT_OPT_BOUND_MULT_INIT_METHOD            , IPOPT_CAT_INITIALIZATION ,  0,				// CET: Added 8-24-2009
-	  "Initialization_method_for_bound_multipliers"	 , "bound_mult_init_method"  ,
+	  "Bound_multipliers_initialization_method"   , "bound_mult_init_method"     ,
 	  1 , aimms_keyw_bound_mult_init_method       , ipopt_keyw_bound_mult_init_method },
 
 	{ IPOPT_OPT_WATCHDOG_SHORTENED_ITER_TRIGGER   , IPOPT_CAT_LINE_SEARCH     , 0,				// CET: Added 8-24-2009
-	  "Number_of_shortened_iterations_that_trigger_the_watchdog" , "watchdog_shortened_iter_trigger" ,
+	  "Watchdog_shortened_iteration_trigger"      , "watchdog_shortened_iter_trigger" ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_LIMITED_MEMORY_MAX_HISTORY        , IPOPT_CAT_QUASI_NEWTON    , 0,				// CET: Added 8-24-2009
-	  "Maximum_size_of_history_for_limited_quasi-newton_Hessian_approximation" , "limited_memory_max_history" ,
+	  "Hessian_approximation_history_memory_limit", "limited_memory_max_history" ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_LIMITED_MEMORY_MAX_SKIPPING       , IPOPT_CAT_QUASI_NEWTON   ,  0,				// CET: Added 8-24-2009
-	  "Threshold_for_successive_iterations_where_update_is_skipped" , "limited_memory_max_skipping" ,
+	  "Hessian_approximation_successive_iterations_limit", "limited_memory_max_skipping" ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_START_WITH_RESTO                  , IPOPT_CAT_RESTORATION_PHASE, 0,				// CET: Added 8-24-2009
-	  "Switch_to_restoration_phase_in_first_iteration"  , "start_with_resto"      ,
+	  "Force_start_in_restoration_phase"          , "start_with_resto"            ,
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 
 	{ IPOPT_OPT_EVALUATE_ORIG_OBJ_AT_RESTO_TRIAL  , IPOPT_CAT_RESTORATION_PHASE, 0,				// CET: Added 8-24-2009
-	  "Evaluate_original_objective_function_at_restoration_phase_trial_points"    , "evaluate_orig_obj_at_resto_trial"  ,
+	  "Use_original_objective_function_in_restoration_phase"    , "evaluate_orig_obj_at_resto_trial"  ,
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 
-
 #ifdef MC19_IS_AVAILABLE
-
 	{ IPOPT_OPT_LINEAR_SYSTEM_SCALING             , IPOPT_CAT_LINEAR_SOLVER    , 0,				// CET: Added 8-24-2009
-	  "Method_for_scaling_the_linear_system"      , "linear_system_scaling"       ,
-	  1 , aimms_keyw_linear_system_scaling        , ipopt_keyw_linear_system_scaling  },
+	  "Linear_system_scaling_method"              , "linear_system_scaling"       ,
+	  1 , aimms_keyw_linear_scaling_method        , ipopt_keyw_linear_scaling_method  },
 #endif
-
 
 	{ IPOPT_OPT_JAC_C_CONSTANT                    , IPOPT_CAT_NLP             ,  0,
 	  "Assume_equality_constraints_are_linear"    , "jac_c_constant"              ,
@@ -991,11 +943,11 @@ static ipopt_option_rec  ipopt_int_options[] =
 	  1 , aimms_keyw_bar_upd                      , ipopt_keyw_bar_upd           },
 
 	{ IPOPT_OPT_CHECK_DERIV_NANINF                , IPOPT_CAT_NLP  			  ,  0,
-	  "Check_derivatives_for NaN_/_Inf"			  , "check_derivatives_for_naninf" ,
-	  1 , aimms_keyw_deriv_check_NaN              , ipopt_keyw_deriv_check_NaN   },
+	  "Check_derivatives_for_invalid_numbers"     , "check_derivatives_for_naninf" ,
+	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes             },
 	
 	{ IPOPT_OPT_CONSTRAINT_MULT_STEP_SIZE         , IPOPT_CAT_MULTIPLIER_UPDATES ,  0,
-	  "Method_to_determine_step_size_for_constraint_multipliers" , "alpha_for_y"  ,
+	  "Constraint_multipliers_step_size_method"   , "alpha_for_y"                ,
 	  1 , aimms_keyw_con_step                     , ipopt_keyw_con_step          },
 	
 	{ IPOPT_OPT_CHECK_DERIVATIVES                 , IPOPT_CAT_DERIVATIVE_TEST ,  0,
@@ -1007,7 +959,7 @@ static ipopt_option_rec  ipopt_int_options[] =
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 	
 	{ IPOPT_OPT_EXPECT_INFEAS_PROBLEM             , IPOPT_CAT_RESTORATION_PHASE, 0,
-	  "Enable_heuristics_to_quickly_detect_an_infeasible_problem"  , "expect_infeasible_problem"  ,
+	  "Quickly_detect_infeasible_problem"         , "expect_infeasible_problem"   ,
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 	
 	{ IPOPT_OPT_FIXED_VARIABLE_TREATMENT          , IPOPT_CAT_NLP             ,  0,
@@ -1024,12 +976,11 @@ static ipopt_option_rec  ipopt_int_options[] =
 
 #ifdef MC19_IS_AVAILABLE
 	{ IPOPT_OPT_SCALE_ON_DEMAND	                  , IPOPT_CAT_LINEAR_SOLVER  ,   0,
-	  "Linear_scaling_done_only_if_required"      , "linear_scaling_on_demand"    ,
-	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
+	  "Linear_system_scaling"                     , "linear_scaling_on_demand"    ,
+	  1 , aimms_keyw_linear_scaling               , ipopt_keyw_no_yes            },
 #endif
 
 #ifdef MA57_IS_AVAILABLE
-
 	{ IPOPT_OPT_MA57_PIVOT_ORDER                  , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 04-23-2010
 	  "MA57_pivot_order"					      , "ma57_pivot_order"           ,
 	  0 , NULL                                    , NULL                         },
@@ -1049,14 +1000,11 @@ static ipopt_option_rec  ipopt_int_options[] =
 	{ IPOPT_OPT_MA57_SMALL_PIVOT_FLAG             , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 04-28-2010
 	  "MA57_small_pivot_parameter"				  , "ma57_small_pivot_flag"       ,
 	  0 , NULL                                    , NULL                         },
-
 #endif
-
-
 
 #ifdef MUMPS_IS_AVAILABLE
 	{ IPOPT_OPT_MUMPS_MEM_PERCENT                 , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 8-22-2009
-	  "MUMPS_%_increase_in_estimated_working_space", "mumps_mem_percent"          ,
+	  "MUMPS_working_space_percentage_increase"   , "mumps_mem_percent"           ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_MUMPS_PERMUTING_SCALING           , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 8-22-2009
@@ -1070,7 +1018,6 @@ static ipopt_option_rec  ipopt_int_options[] =
 	{ IPOPT_OPT_MUMPS_SCALING                     , IPOPT_CAT_LINEAR_SOLVER  ,	 0,		// CET: Added 8-22-2009
 	  "MUMPS_scaling"						      , "mumps_scaling"               ,
 	  0 , NULL                                    , NULL                         },
-
 #endif
 
 	{ IPOPT_OPT_MAX_NUM_ITER                      , IPOPT_CAT_TERMINATION     ,  0,
@@ -1078,7 +1025,7 @@ static ipopt_option_rec  ipopt_int_options[] =
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_ACCEPTABLE_ITER                   , IPOPT_CAT_TERMINATION     ,  0,		// CET: Added 8-23-2009
-	  "Number_of_acceptable_iterates_before_triggering_termination" , "acceptable_iter" ,
+	  "Maximum_number_of_acceptable_iterations"   , "acceptable_iter"             ,
 	  0 , NULL                                    , NULL                         },
 	
 	{ IPOPT_OPT_MAX_NUM_REFINEMENT_STEPS          , IPOPT_CAT_LINEAR_SOLVER   ,  0,
@@ -1094,15 +1041,15 @@ static ipopt_option_rec  ipopt_int_options[] =
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_SCALING_METHOD                    , IPOPT_CAT_NLP_SCALING    ,   0,
-	  "Desired_NLP_scaling_method"                , "nlp_scaling_method"          ,
+	  "NLP_scaling_method"                        , "nlp_scaling_method"          ,
 	  1 , aimms_keyw_scal_m                       , ipopt_keyw_scal_m            },
 		  
 	{ IPOPT_OPT_BARRIER_ORACLE_ADAPTIVE           , IPOPT_CAT_BARRIER_PARAMETER, 0,
-	  "Oracle_for_new_barrier_parameter_in_adaptive_strategy"   , "mu_oracle"     ,
+	  "Adaptive_strategy_oracle"                  , "mu_oracle"                   ,
 	  1 , aimms_keyw_bar_ora                      , ipopt_keyw_bar_ora           },
 	
 	{ IPOPT_OPT_BARRIER_FIXED_MU_ORACLE           , IPOPT_CAT_BARRIER_PARAMETER, 0,
-	  "Oracle_for_barrier_parameter_when_switching_to_fixed_mode" , "fixed_mu_oracle" ,
+	  "Fixed_mode_oracle"                         , "fixed_mu_oracle"             ,
 	  1 , aimms_keyw_bar_ora_fix                  , ipopt_keyw_bar_ora_fix       },
 	  
 	{ IPOPT_OPT_PRINT_LEVEL                       , IPOPT_CAT_OUTPUT         ,   0,
@@ -1114,7 +1061,7 @@ static ipopt_option_rec  ipopt_int_options[] =
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 	
 	{ IPOPT_OPT_PRINT_DERIV						  , IPOPT_CAT_DERIVATIVE_TEST,   0,
-	  "Print_derivative_info_for_all_estimated_derivatives"	, "derivative_test_print_all"  ,
+	  "Derivative_checker_verbosity"	          , "derivative_test_print_all"   ,
 	  1 , aimms_keyw_print_deriv                  , ipopt_keyw_print_deriv       },
 	  
 	{ IPOPT_OPT_PRINT_USER_OPTIONS                , IPOPT_CAT_OUTPUT         ,   0,
@@ -1122,15 +1069,15 @@ static ipopt_option_rec  ipopt_int_options[] =
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 	
 	{ IPOPT_OPT_HONOR_ORIGINAL_BOUNDS             , IPOPT_CAT_NLP            ,   0,
-	  "Project_final_points_into_original_bounds" , "honor_original_bounds"       ,
+	  "Honor_original_bounds"                     , "honor_original_bounds"       ,
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 
 	{ IPOPT_OPT_BARRIER_QUALITY_FN_MAX_STEPS      , IPOPT_CAT_BARRIER_PARAMETER, 0,
-	  "Max_number_of_search_steps_when_determining_optimal_centering_parameter" , "quality_function_max_section_steps" ,
+	  "Quality_function_section_steps_limit"      , "quality_function_max_section_steps" ,
 	  0 , NULL                                    , NULL						 },
 
 	{ IPOPT_OPT_RECALC_MULTIPLIERS                , IPOPT_CAT_MULTIPLIER_UPDATES, 0,
-	  "Recalculate_equality_and_inequality_multipliers_as_least_square_estimates" , "recalc_y"  ,
+	  "Recalculate_constraint_multipliers"        , "recalc_y"                    ,
 	  1 , aimms_keyw_no_yes                       , ipopt_keyw_no_yes            },
 	
 	{ IPOPT_OPT_STATUS_FILE                       , IPOPT_CAT_OUTPUT         ,   0,
@@ -1138,11 +1085,11 @@ static ipopt_option_rec  ipopt_int_options[] =
 	  1 , aimms_keyw_no_yes                       , NULL                         },
 
 	{ IPOPT_OPT_MAX_2ND_ORDER_STEPS               , IPOPT_CAT_LINE_SEARCH    ,   0,
-	  "Maximum_number_of_2nd_order_correction_trial_steps_at_each_iteration"      , "max_soc" ,
+	  "Second_order_correction_trial_steps_limit" , "max_soc"                     ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_CORRECTOR_STEP_TYPE               , IPOPT_CAT_LINE_SEARCH    ,   0,
-	  "Type_of_corrector_steps_for_adaptive_strategy" , "corrector_type"          ,
+	  "Corrector_steps_type"                      , "corrector_type"              ,
 	  1 , aimms_keyw_correc                       , ipopt_keyw_correc            }
 
 /*	CET: Not used for now
@@ -1162,115 +1109,119 @@ static ipopt_option_rec  ipopt_dbl_options[] =
 	//CET: Updated double options for Ipopt 3.7.
 
 	{ IPOPT_OPT_NLP_LOWER_BOUND_INF               , IPOPT_CAT_NLP            ,  0,				// CET: Added 8-24-2009		
-	  "-Inf_lower_bound_limit"                    , "nlp_lower_bound_inf"        ,
+	  "Minus_infinity_lower_bound"                , "nlp_lower_bound_inf"        ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_NLP_UPPER_BOUND_INF               , IPOPT_CAT_NLP            ,  0,				// CET: Added 8-24-2009		
-	  "+Inf_upper_bound_limit"                    , "nlp_upper_bound_inf"         ,
+	  "Infinity_upper_bound"                      , "nlp_upper_bound_inf"        ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_SLACK_BOUND_FRAC                  , IPOPT_CAT_INITIALIZATION ,  0,				// CET: Added 8-24-2009		
-	  "Desired_min_relative_distance_from_initial_slack_to_bound", "slack_bound_frac" ,
+	  "Slack_to_bound_relative_distance"          , "slack_bound_frac"           ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_SLACK_BOUND_PUSH                  , IPOPT_CAT_INITIALIZATION ,  0,				// CET: Added 8-24-2009		
-	  "Desired_min_absolute_distance_from_initial_slack_to_bound", "slack_bound_push" ,
+	  "Slack_to_bound_absolute_distance"          , "slack_bound_push"           ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_CONSTR_MULT_INIT_MAX              , IPOPT_CAT_INITIALIZATION ,  0,				// CET: Added 8-24-2009		
-	  "Max_allowed_least-square_guess_of_constraint_multipliers", "constr_mult_init_max" ,
+	  "Constraint_multipliers_initial_guess_limit", "constr_mult_init_max"       ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_MU_MAX_FACT                       , IPOPT_CAT_BARRIER_PARAMETER , 0,			// CET: Added 8-24-2009		
-	  "Factor_for_initialization_of_max_value_for_barrier_param", "mu_max_fact"   ,
-	  0 , NULL                                    , NULL                         },
+	  "Adaptive_strategy_factor_limit"            , "mu_max_fact"                  ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_MU_MAX                            , IPOPT_CAT_BARRIER_PARAMETER , 0,			// CET: Added 8-24-2009		
 	  "Maximum_value_for_barrier_parameter"       , "mu_max"                      ,
-	  0 , NULL                                    , NULL                         },
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_MU_MIN                            , IPOPT_CAT_BARRIER_PARAMETER , 0,			// CET: Added 8-24-2009		
 	  "Minimum_value_for_barrier_parameter"       , "mu_min"                      ,
-	  0 , NULL                                    , NULL                         },
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_BARRIER_TOL_FACTOR                , IPOPT_CAT_BARRIER_PARAMETER , 0,			// CET: Added 8-24-2009		
-	  "Factor_for_mu_in_barrier_stop_test"        , "barrier_tol_factor"          ,
-	  0 , NULL                                    , NULL                         },
+	  "Barrier_convergence_tolerance_factor"      , "barrier_tol_factor"          ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_MU_LINEAR_DECREASE_FACTOR         , IPOPT_CAT_BARRIER_PARAMETER , 0,			// CET: Added 8-24-2009		
-	  "Determines_linear_decrease_rate_of_barrier_parameter", "mu_linear_decrease_factor" ,
-	  0 , NULL                                    , NULL                         },
+	  "Linear_decrease_factor_barrier_parameter"  , "mu_linear_decrease_factor"    ,
+	  0 , NULL                                    , NULL                           },
 
 	{ IPOPT_OPT_MU_SUPERLINEAR_DECREASE_POWER     , IPOPT_CAT_BARRIER_PARAMETER , 0,			// CET: Added 8-24-2009		
-	  "Determines_superlinear_decrease_rate_of_barrier_param", "mu_superlinear_decrease_power" ,
+	  "Superlinear_decrease_rate_barrier_parameter", "mu_superlinear_decrease_power" ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_RECALC_Y_FEAS_TOL                 , IPOPT_CAT_MULTIPLIER_UPDATES , 0,			// CET: Added 8-24-2009
-	  "Feasibility_threshold_for_recomputation_of_multipliers" , "recalc_y_feas_tol"  ,
+	  "Recalculate_constraint_multipliers_tolerance" , "recalc_y_feas_tol"          ,
 	  0 , NULL									  , NULL                         },
 
-	{ IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_CTOL     , IPOPT_CAT_RESTORATION_PHASE , 0,			// CET: Added 8-24-2009
-	  "Threshold_for_disabling_expect_feasible_problem_option"  , "expect_infeasible_problem_ctol"  ,
+	{ IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_CTOL    , IPOPT_CAT_RESTORATION_PHASE , 0,			// CET: Added 8-24-2009
+	  "Minimum_violation_infeasible_problem"      , "expect_infeasible_problem_ctol" ,
+	  0 , NULL                                    , NULL                         },
+
+	{ IPOPT_OPT_EXPECT_INFEASIBLE_PROBLEM_YTOL    , IPOPT_CAT_RESTORATION_PHASE , 0,
+	  "Maximum_multipliers_infeasible_problem"    , "expect_infeasible_problem_ytol" ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_SOFT_RESTO_PDERROR_REDUCTION_FACTOR, IPOPT_CAT_RESTORATION_PHASE , 0,			// CET: Added 8-24-2009
-	  "Required_reduction_in_primal-dual_error_in_soft_restoration_phase"  , "soft_resto_pderror_reduction_factor"  ,
+	  "Reduction_factor_primal_dual_error"        , "soft_resto_pderror_reduction_factor" ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_REQUIRED_INFEASIBILITY_REDUCTION  , IPOPT_CAT_RESTORATION_PHASE ,  0,			// CET: Added 8-24-2009
-	  "Required_reduction_of_infeasibility_before_leaving_restoration_phase"  , "required_infeasibility_reduction"  ,
+	  "Required_infeasibility_reduction"          , "required_infeasibility_reduction"  ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_BOUND_MULT_RESET_THRESHOLD        , IPOPT_CAT_RESTORATION_PHASE ,  0,			// CET: Added 8-24-2009
-	  "Threshold_for_resetting_bound_multipliers_after_restoration_phase"  , "bound_mult_reset_threshold"  ,
-	  0 , NULL                                    , NULL                         },
+	  "Bound_multipliers_reset_threshold"         , "bound_mult_reset_threshold"    ,
+	  0 , NULL                                    , NULL                            },
 
 	{ IPOPT_OPT_CONSTR_MULT_RESET_THRESHOLD       , IPOPT_CAT_RESTORATION_PHASE ,  0,			// CET: Added 8-24-2009
-	  "Threshold_for_resetting_equality_and_inequality_multipliers_after_restoration_phase"  , "constr_mult_reset_threshold"  ,
-	  0 , NULL                                    , NULL                         },
+	  "Constraint_multipliers_reset_threshold"    , "constr_mult_reset_threshold"   ,
+	  0 , NULL                                    , NULL                            },
 
 	{ IPOPT_OPT_MAX_HESSIAN_PERTURBATION          , IPOPT_CAT_HESSIAN_PERTURBATION ,  0,			// CET: Added 8-24-2009
-	  "Max_value_of_regularization_parameter_for_handling_negative_curvature"  , "max_hessian_perturbation"  ,
-	  0 , NULL                                    , NULL                         },
+	  "Maximum_Hessian_perturbation"              , "max_hessian_perturbation"    ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_MIN_HESSIAN_PERTURBATION          , IPOPT_CAT_HESSIAN_PERTURBATION ,  0,			// CET: Added 8-24-2009
-	  "Smallest_perturbation_of_Hessian_block"    , "min_hessian_perturbation"  ,
-	  0 , NULL                                    , NULL                         },
+	  "Minimum_Hessian_perturbation"              , "min_hessian_perturbation"    ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_FIRST_HESSIAN_PERTURBATION        , IPOPT_CAT_HESSIAN_PERTURBATION ,  0,			// CET: Added 8-24-2009
-	  "Size_of_first_x-s_perturbation_tried"      , "first_hessian_perturbation"  ,
-	  0 , NULL                                    , NULL                         },
+	  "First_Hessian_perturbation_size"           , "first_hessian_perturbation"  ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_PERTURB_INC_FACT_FIRST            , IPOPT_CAT_HESSIAN_PERTURBATION ,  0,			// CET: Added 8-24-2009
-	  "Increase_factor_for_x-s_perturbation_for_very_first_perturbation"  , "perturb_inc_fact_first"  ,
-	  0 , NULL                                    , NULL                         },
+	  "First_Hessian_perturbation_increase_factor", "perturb_inc_fact_first"      ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_PERTURB_INC_FACT                  , IPOPT_CAT_HESSIAN_PERTURBATION ,  0,			// CET: Added 8-24-2009
-	  "Increase_factor_for_x-s_perturbation"      , "perturb_inc_fact"  ,
-	  0 , NULL                                    , NULL                         },
+	  "Hessian_perturbation_increase_factor"      , "perturb_inc_fact"            ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_PERTURB_DEC_FACT                  , IPOPT_CAT_HESSIAN_PERTURBATION ,  0,			// CET: Added 8-24-2009
-	  "Decrease_factor_for_x-s_perturbation"      , "perturb_dec_fact"  ,
-	  0 , NULL                                    , NULL                         },
+	  "Hessian_perturbation_decrease_factor"      , "perturb_dec_fact"            ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_JACOBIAN_REGULARIZATION_VALUE     , IPOPT_CAT_HESSIAN_PERTURBATION ,  0,			// CET: Added 8-24-2009
-	  "Size_of_the_regularization_for_rank-deficient_constraint_Jacobians"  , "jacobian_regularization_value"  ,
-	  0 , NULL                                    , NULL                         },
+	  "Jacobian_regularization_value"             , "jacobian_regularization_value"  ,
+	  0 , NULL                                    , NULL                            },
 
 	{ IPOPT_OPT_DERIVATIVE_TEST_PERTURBATION      , IPOPT_CAT_DERIVATIVE_TEST ,  0,					// CET: Added 8-24-2009
-	  "Size_of_the_finite_difference_perturbation_in_derivative_test"  , "derivative_test_perturbation"  ,
+	  "Derivative_test_perturbation_size"         , "derivative_test_perturbation"  ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_DERIVATIVE_TEST_TOL               , IPOPT_CAT_DERIVATIVE_TEST ,  0,					// CET: Added 8-24-2009
-	  "Threshold_for_indicating_incorrect_derivative" , "derivative_test_tol"  ,
-	  0 , NULL                                    , NULL                         },
+	  "Derivative_test_tolerance"                 , "derivative_test_tol"         ,
+	  0 , NULL                                    , NULL                          },
 
 	{ IPOPT_OPT_POINT_PERTURBATION_RADIUS         , IPOPT_CAT_DERIVATIVE_TEST ,  0,					// CET: Added 8-24-2009
-	  "Maximal_perturbation_of_an_evaluation_point"  , "point_perturbation_radius"  ,
-	  0 , NULL                                    , NULL                         },
-	
+	  "Maximum_perturbation_of_evaluation_point"  , "point_perturbation_radius"   ,
+	  0 , NULL                                    , NULL                          },
+
 	{ IPOPT_OPT_ABSOLUTE_BOUND_DISTANCE           , IPOPT_CAT_INITIALIZATION ,  0,		
-	  "Desired_minimum_absolute_distance_from_initial_point_to_bound", "bound_push"  ,
+	  "Point_to_bound_absolute_distance"          , "bound_push"                 ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_BARRIER_INITIAL_VALUE             , IPOPT_CAT_BARRIER_PARAMETER ,  0,		
@@ -1286,19 +1237,19 @@ static ipopt_option_rec  ipopt_dbl_options[] =
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_COMPLEMENTARITY_ACCEP_TOL         , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Acceptance_threshold_for_complementarity_conditions" , "acceptable_compl_inf_tol"   ,
+	  "Acceptable_complementarity_tolerance"      , "acceptable_compl_inf_tol"   ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_COMPLEMENTARITY_TOLERANCE         , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Desired_threshold_for_complementarity_conditions" , "compl_inf_tol"        ,
+	  "Complementarity_tolerance"                 , "compl_inf_tol"       ,
 	  0 , NULL                                    , NULL                         },
 	
 	{ IPOPT_OPT_CONSTRAINT_VIOL_ACCEP_TOL         , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Acceptance_threshold_for_constraint_violation" , "acceptable_constr_viol_tol" ,
+	  "Acceptable_constraint_violation_tolerance" , "acceptable_constr_viol_tol" ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_CONSTRAINT_VIOL_TOLERANCE         , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Desired_threshold_for_constraint_violation" , "constr_viol_tol"            ,
+	  "Constraint_violation_tolerance"            , "constr_viol_tol"            ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_CONVERGENCE_ACCEP_TOL             , IPOPT_CAT_TERMINATION    ,  0,		
@@ -1306,19 +1257,19 @@ static ipopt_option_rec  ipopt_dbl_options[] =
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_CONVERGENCE_TOLERANCE             , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Desired_relative_convergence_tolerance"    , "tol"                        ,
+	  "Relative_convergence_tolerance"            , "tol"                        ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_DIVERGING_ITERATES_TOL            , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Threshold_for_maximal_value_of_primal_iterates"	, "diverging_iterates_tol" ,
+	  "Diverging_iterates_tolerance"	          , "diverging_iterates_tol"     ,
 	  0 , NULL                                    , NULL                         },
 	
 	{ IPOPT_OPT_DUAL_INF_ACCEP_TOL                , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Acceptance_threshold_for_dual_infeasibility" , "acceptable_dual_inf_tol"   ,
+	  "Acceptable_dual_infeasibility_tolerance"   , "acceptable_dual_inf_tol"    ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_DUAL_INF_TOLERANCE                , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Desired_threshold_for_dual_infeasibility"  , "dual_inf_tol"               ,
+	  "Dual_infeasibility_tolerance"              , "dual_inf_tol"               ,
 	  0 , NULL                                    , NULL                         },
 
 #ifdef MA27_IS_AVAILABLE
@@ -1341,8 +1292,6 @@ static ipopt_option_rec  ipopt_dbl_options[] =
 	{ IPOPT_OPT_MA27_MEMINC_FACTOR                , IPOPT_CAT_LINEAR_SOLVER   ,  0,		// CET: Added 8-22-2009		
 	  "MA27_increment_factor_for_workspace_size"  , "ma27_meminc_factor"         ,
 	  0 , NULL                                    , NULL                         },
-
-
 #endif
 
 #ifdef MA57_IS_AVAILABLE
@@ -1357,7 +1306,6 @@ static ipopt_option_rec  ipopt_dbl_options[] =
 	{ IPOPT_OPT_MA57_PRE_ALLOC					  , IPOPT_CAT_LINEAR_SOLVER  ,  0,		// CET: Added 04-23-2010
 	  "MA57_work_space_memory_safety_factor"	  , "ma57_pre_alloc"             ,
 	  0 , NULL                                    , NULL                         },
-
 #endif
 
 #ifdef MUMPS_IS_AVAILABLE
@@ -1375,19 +1323,19 @@ static ipopt_option_rec  ipopt_dbl_options[] =
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_OBJ_CHANGE_ACCEP_TOL			  , IPOPT_CAT_TERMINATION    ,  0,		
-	  "Acceptance_stopping_criterion_based_on_objective_function_change" , "acceptable_obj_change_tol" ,
+	  "Acceptable_objective_change_tolerance"     , "acceptable_obj_change_tol"  ,
 	  0 , NULL                                    , NULL                         },
 	
 	{ IPOPT_OPT_OBJECTIVE_SCALING_FACTOR          , IPOPT_CAT_NLP_SCALING    ,  0,		
 	  "Objective_function_scaling_factor"         , "obj_scaling_factor"         ,
 	  0 , NULL                                    , NULL                         },
-	
+
 	{ IPOPT_OPT_RELATIVE_BOUND_DISTANCE           , IPOPT_CAT_INITIALIZATION ,  0,		
-	  "Desired_minimum_relative_distance_from_initial_point_to_bound", "bound_frac" ,
+	  "Point_to_bound_relative_distance"          , "bound_frac"                 ,
 	  0 , NULL                                    , NULL                         },
 
 	{ IPOPT_OPT_ALPHA_FOR_Y_TOL			          , IPOPT_CAT_MULTIPLIER_UPDATES ,  0,		
-	  "Tolerance_for_switching_to_full_equality_multiplier_steps" , "alpha_for_y_tol" ,
+	  "Equality_multipliers_switch_tolerance"     , "alpha_for_y_tol"            ,
 	  0 , NULL                                    , NULL                         }
 
 #ifdef WSMP_IS_AVAILABLE
@@ -1438,8 +1386,8 @@ void IpoptSolverInfo::IPOPT_order_options( void )
 		
 		for ( j=0; j<IPOPT_OPT_INT_MAX; j++ ) {
 			if ( handled_int[ j ] == 0 ) {
-			    if ( best_opt_ind == -1                                          ||
-			         _stricmp( ipopt_int_options[ j ].aimms_name, best_opt ) < 0 ) {
+			    if ( best_opt_ind == -1                                         ||
+			         STRICMP( ipopt_int_options[ j ].aimms_name, best_opt ) < 0 ) {
 			        best_opt_ind = j;
 			        best_opt_is_int = true;
 			        best_opt = ipopt_int_options[ j ].aimms_name;
@@ -1449,8 +1397,8 @@ void IpoptSolverInfo::IPOPT_order_options( void )
 		
 		for ( j=0; j<IPOPT_OPT_DBL_MAX; j++ ) {
 			if ( handled_dbl[ j ] == 0 ) {
-			    if ( best_opt_ind == -1                                          ||
-			         _stricmp( ipopt_dbl_options[ j ].aimms_name, best_opt ) < 0 ) {
+			    if ( best_opt_ind == -1                                         ||
+			         STRICMP( ipopt_dbl_options[ j ].aimms_name, best_opt ) < 0 ) {
 			        best_opt_ind = j;
 			        best_opt_is_int = false;
 			        best_opt = ipopt_dbl_options[ j ].aimms_name;
@@ -1767,7 +1715,7 @@ int IpoptMathProgramInstance::IPOPT_Set_Options( Ipopt::SmartPtr<Ipopt::IpoptApp
         m_gen->GetLogDirName( dir, &len );
     	    
     	if ( len >= 0 ) {
-    	    sprintf( file_name, "%s\\%s", dir, IPOPT_STATUS_FILE_NAME );
+    	    sprintf( file_name, "%s/%s", dir, IPOPT_STATUS_FILE_NAME );
     	
 			bReturn = app->Options()->SetStringValue( "output_file", file_name );
 			if ( bReturn == false ) {
