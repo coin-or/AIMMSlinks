@@ -1,0 +1,98 @@
+This release only supports building the solver interfaces to IPOPT on 32-bits and 64-bits Windows platforms.
+
+The instructions below assume that you are using the included Microsoft Visual Studio projects to build
+the interfaced DLLs.
+
+For installation of an AIMMS system, see the file INSTALL in the AIMMSlinks directory.
+
+= Main steps to build the AIMMS-IPOPT link =
+
+ 1. Download and install IPOPT.
+ 2. Build the AIMMS-IPOPT dll.
+ 3. Add IPOPT to your AIMMS system.
+ 4. Test IPOPT in AIMMS.
+
+
+= Detailed instructions =
+
+== 1. Download and install IPOPT ==
+
+Download IPOPT DLL binaries from http://www.coin-or.org/download/binary/Ipopt/: Ipopt-X.Y.Z-win32-dll.zip
+for Windows 32 bits (e.g., Ipopt-3.8.1-win32-dll.zip) or Ipopt-X.Y.Z-win64-dll.zip for Windows 64 bits.
+
+Unpack the zip file in the IpoptAimms directory. After unpacking the zip file the directory structure of the
+IpoptAimms directory should be:
+
+   - IpoptAimms
+     - include
+       - coin
+     - lib
+       - win32/x64
+         - debug
+         - release
+     - MSVisualStudio
+       - v8
+     - src
+
+The IPOPT dll is built using the third party components BLAS and LAPACK. The IPOPT dll includes the public
+domain solver MUMPS which makes use of the matrix ordering algorithms implemented in METIS.
+
+Using the "library loader", a Pardiso DLL or a DLL with HSL subroutines (which the user has to compile) can
+be loaded at runtime. The third party software for Pardiso and HSL is released under different licenses than
+IPOPT. For this reason that code is not distributed together with the IPOPT packages and therefore you have
+to go through the hassle of obtaining it yourself.
+
+See the prerequisites for IPOPT (at http://www.coin-or.org/Ipopt/documentation/node6.html) for more information
+on these third party components. Keep in mind that it is YOUR RESPONSIBILITY to ensure that your downloading
+and usage of the third party components conforms with their licenses.
+See http://www.coin-or.org/Ipopt/documentation/node14.html for downloading external code.
+
+
+== 2. Build the AIMMS-IPOPT dll ==
+
+By default the AIMMS-IPOPT link gives you the possibility to choose, through the option 'Linear solver selection',
+between the linear solvers MUMPS, MA27 (HSL) and Pardiso where MUMPS is the default selection. If you select a
+linear solver that is not available then the solve will fail. To add other linear solvers you should configure
+the AimmsIpoptConfig.h file in the src directory.
+
+Build the code using Microsoft Visual Studio Interactive Development Environment (IDE) version 8 or higher by
+opening the project file libAimmsIpopt.vcproj inside the IpoptAimms\MSVisualStudio\v8 directory.
+
+The AIMMS-IPOPT dll built by default is for an AIMMS ASCII version. To build a dll for AIMMS Unicode, change
+the value of 'Character Set' inside the project file (in Configuration Properties - General) into
+'Use Unicode Character Set'.
+
+
+== 3. Add IPOPT to AIMMS ==
+
+a. Copy the libAimmsIpopt.dll file to the Solvers directory of your AIMMS installation.
+b. Copy the IPOPT dll in IpoptAimms\lib, e.g., IpoptAimms\lib\win32\release\Ipopt38.dll to the Solvers directory
+   of your AIMMS installation.
+
+Please note that the debug and release versions of the Ipopt DLL are *not* binary compatible, because the MSVC
+compiler unfortunately treats std::string objects slightly differently in both configurations. Using a debug version
+of libAimmsIpopt.dll in combination with a release version of the IPOPT dll (and vice versa) will therefore propably
+lead to stack corruption, runtime errors, or other hard-to-explain crashes.
+
+c. After starting up AIMMS, add IPOPT to the Solvers Configuration:
+   - Open the Solver Configuration dialog box (under Settings);
+   - Click Add;
+   - At the Solver DLL field, select the 'libAimmsIpopt.dll' file using the File Selection dialog box;
+   - Click OK to accept the new solver.
+   - Set IPOPT as the default NLP solver, and click OK to close the Solver Configuration dialog box.
+
+
+== 4. Test IPOPT in AIMMS ==
+
+After adding IPOPT to the solver configuration, you can test IPOPT by using some of the AIMMS examples.
+
+- Example Two Level Decision Problem (NLP):
+  - Open the TwoLevel.prj project.
+  - Click Open Demo Page.
+  - Open the progress window by pressing CTRL+P.
+  - Click Solve Submodels for Given Tax. The progress window should contain the following information (amongst others):
+  
+     SOLVER            : IPOPT
+       Best Solution   : 972.9803698
+       Program Status  : Locally optimal
+       Solver Status   : Normal completion
