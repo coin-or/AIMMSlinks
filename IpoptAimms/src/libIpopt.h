@@ -9,7 +9,10 @@
 #ifndef _DEFINED_LIBIPOPT_H
 #define _DEFINED_LIBIPOPT_H
 
+#ifdef WIN32
 #include <windows.h>
+#endif
+#include <stddef.h>
 
 #include "IAimmsOSI.h"							// Header file of AIMMS open solver interface
 #include "AimmsIpoptConfig.h"					// Used to handle different linear solvers that may be available
@@ -22,12 +25,6 @@
 //#define _AIMMS390_
 
 // Some IPOPT-related constants.
-
-#ifdef IPOPT_VERSION
-#define _IPOPT_VERSION            IPOPT_VERSION
-#else
-#define _IPOPT_VERSION            "3.8.1"
-#endif
 
 #define IPOPT_STATUS_FILE_NAME    "ipopt.sta"
 
@@ -60,7 +57,6 @@
   #define IPOPTfree( _ptr )     \
      free( _ptr );
 #endif
-
 
 
 // This global structure is used to transfer problem-related information from AIMMS to IPOPT.
@@ -121,8 +117,10 @@ typedef struct IPOPT_handle_record
 
 #ifdef WIN32
 #define SPRINTF _stprintf
+#define STRICMP _stricmp
 #else // WIN32
 #define SPRINTF sprintf
+#define STRICMP strcasecmp
 #endif // WIN32
 
 #endif // _DEFINED_LIBIPOPT_H

@@ -50,10 +50,6 @@
 #define CBC_MM_MAX_ELEM    100              // Maximal number of matrix elements updates
                                             // for matrix manipulation in each call
 
-// Unfortunately there is no definition of the CBC version in the CBC package. Therefore we have
-// to update CBC_VERSION below whenever CBC itself is updated.
-
-#define CBC_VERSION           "2.4"
 #define CBC_STATUS_FILE_NAME  "cbc.sta"
 #define CBC_LOG_FILE_NAME     "cbc.log"
 
@@ -89,6 +85,7 @@ typedef struct cbc_handle_record {
                                     // -1 : minimize objective function
                                     //  0 : find a feasible solution
                                     //  1 : maximize objective function
+    _LONG_T  obj_col_no;            // Number of objective column (if any)
     _LONG_T  basis;                 // If 1, the provided basis is used
     _LONG_T  update;                // If 1, an updated version is solved
     bool     solved;                // If 1, model is successfully solved
@@ -150,8 +147,10 @@ extern void __cdecl saveSolution(const ClpSimplex * lpSolver,std::string fileNam
 
 #ifdef WIN32
 #define SPRINTF _stprintf
+#define STRICMP _stricmp
 #else // WIN32
 #define SPRINTF sprintf
+#define STRICMP strcasecmp
 #endif // WIN32
 
 #ifdef UNICODE

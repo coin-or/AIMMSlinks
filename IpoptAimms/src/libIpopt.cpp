@@ -8,7 +8,9 @@
 
 // Suppress warning messages associated with older CRT library functions such as sprintf() and strcpy()
 #define _CRT_SECURE_NO_WARNINGS
+#ifndef _CRT_NON_CONFORMING_SWPRINTFS
 #define _CRT_NON_CONFORMING_SWPRINTFS
+#endif
 
 // Includes necessary IPOPT header files
 #include <stdio.h>
@@ -182,9 +184,26 @@ int IpoptSolverInfo::RegisterAsSolver( char* name, _LONG_T* model_flags )
 
     // This function is (only) called when the solver is added to the 'Solver
     // Configuration' of AIMMS.
+    
+    // We are not interested in the sub-sub version number but only the sub version
+    // number (e.g., 3.9 instead of 3.9.1).
+    
+    char version[16];
+    
+    sprintf( version, "%s\0", IPOPT_VERSION );
+    
+    char *str1 = strstr( version, "." );
+    if ( str1 ) {
+    	if ( strlen(str1) >= 2 ) {
+    		char *str2 = strstr( &str1[1], "." );
+    		if ( str2 ) {
+    			str2[0] = '\0';
+    		}
+    	}
+    }
 
 	// Set the solver name for AIMMS.
-    sprintf( name, "IPOPT %s\0", _IPOPT_VERSION );
+    sprintf( name, "IPOPT %s\0", version );
     
 	// The supported model types are LP, NLP, Quadratic, and Quadratically constrained programs.
     *model_flags = AOSI_MODEL_LP               |
@@ -302,7 +321,7 @@ void IpoptSolverInfo::GetVersion(
     // interface), if any, in a character buffer provided by AIMMS. The
     // returned string will be used in the 'About AIMMS' menu option.
 
-    sprintf( buf, "%s (DLL)", _IPOPT_VERSION );
+    sprintf( buf, "%s (DLL)", IPOPT_VERSION );
 
     strncpy( version, buf, size );
     version[ size - 1 ] = '\0';
@@ -316,9 +335,8 @@ void IpoptSolverInfo::GetHelpFile(
 {
     // There if no help file for IPOPT (yet).
 
-//	strncpy( filename, "aimmsipopt.chm", size );
-//	filename[ size - 1 ] = '\0';
-	filename[ 0 ] = '\0';
+	strncpy( filename, "aimmsipopt.chm", size );
+	filename[ size - 1 ] = '\0';
 }
 
 
@@ -326,7 +344,7 @@ void IpoptSolverInfo::GetHelpFile(
 _LONG_T IpoptSolverInfo::GetLogFile( _TCHAR *file_name )
 {
 #ifdef _AIMMS390_
-	strcpy( (char *) file_name, "ipopt.sta\0" );
+	strcpy( (char *) file_name, IPOPT_STATUS_FILE_NAME );
 #else
 	_TCHAR    dir[MAX_DIR_LEN];
     _LONG_T   len = MAX_DIR_LEN;
@@ -334,7 +352,7 @@ _LONG_T IpoptSolverInfo::GetLogFile( _TCHAR *file_name )
     m_gen->GetLogDirNameWchar( dir, &len );
     assert( len != -1 ); 
     
-    SPRINTF( file_name, _T("%s\\%s"), dir, _T("ipopt.sta") );
+    SPRINTF( file_name, _T("%s/%s"), dir, _T(IPOPT_STATUS_FILE_NAME) );
 #endif
     
     return AOSI_SUCCESS;
@@ -439,7 +457,7 @@ void IpoptMathProgramInstance::DoSolve(
                 return;
             } else {
                 fprintf( IPOPT_logfile, "Logfile belonging to IPOPT-API\n" );
-                fprintf( IPOPT_logfile, "IPOPT version: %s\n", _IPOPT_VERSION );
+                fprintf( IPOPT_logfile, "IPOPT version: %s\n", IPOPT_VERSION );
                 fflush( IPOPT_logfile );
             }
         }
@@ -506,7 +524,7 @@ void IpoptMathProgramInstance::DoSolve(
 #else
         sprintf( IPOPT_msg, "Memory in use by IPOPT %s: %ld bytes.",
 #endif
-                            _IPOPT_VERSION, int_stat[ AOSI_ISTAT_MEM_USED ] );
+                            IPOPT_VERSION, int_stat[ AOSI_ISTAT_MEM_USED ] );
         m_gen->PassMessage( AOSI_PRIO_REMARK, IPOPT_msg );
     }
 

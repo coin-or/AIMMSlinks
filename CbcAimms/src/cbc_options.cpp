@@ -195,7 +195,7 @@ static int  cbc_int_opt_up[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_ROUNDING_HEURISTIC            */   3,
 /* CBC_OPT_SCALING                       */   2,
 /* CBC_OPT_SIFTING                       */   5000000,
-/* CBC_OPT_STATUS_FILE                   */   1,
+/* CBC_OPT_STATUS_FILE                   */   2,
 /* CBC_OPT_STRONG_BRANCHING              */   999999,
 #ifdef CBC_PARALLEL
 /* CBC_OPT_THREAD_LIMIT                  */   1000,
@@ -387,6 +387,11 @@ static char *akeyw_scaling[] = {
     "Equilibrium",
     "Geometric" };
 
+static char *akeyw_status_file[] = {
+    "Off",
+    "File",
+    "Stdout" };
+
 static char *akeyw_var_select[] = {
     "Off",
     "Absolute cost",
@@ -488,7 +493,7 @@ static cbc_option_rec  cbc_int_options[] = {
   0, "Scaling"                           , "-scaling"                                                   },
 { CBC_OPT_SIFTING                     , CBC_CAT_GENERAL  , 0 , 0 , NULL              , NULL             ,
   0, "Sifting"                           , "-sprintCrash"                                               },
-{ CBC_OPT_STATUS_FILE                 , CBC_CAT_LOGGING  , 0 , 1 , akeyw_off_on      , NULL             ,
+{ CBC_OPT_STATUS_FILE                 , CBC_CAT_LOGGING  , 0 , 1 , akeyw_status_file , NULL             ,
   0, "Status_file"                       , NULL                                                         },
 { CBC_OPT_STRONG_BRANCHING            , CBC_CAT_MIP      , 0 , 0 , NULL              , NULL             ,
   0, "Strong_branching"                  , "-strongbranching"                                           },
@@ -538,13 +543,13 @@ void CbcSolverInfo::cbc_order_options( void )
 	// First check whether the groups of integer and double options are correctly ordered.
 	
 	for ( int i=0; i<CBC_OPT_INT_MAX-1; i++ ) {
-		if ( stricmp( cbc_int_options[i] . aimms_name, cbc_int_options[i+1] . aimms_name ) > 0 ) {
+		if ( STRICMP( cbc_int_options[i] . aimms_name, cbc_int_options[i+1] . aimms_name ) > 0 ) {
 			BUG;
 		}
 	}
 	
 	for ( int i=0; i<CBC_OPT_DBL_MAX-1; i++ ) {
-		if ( stricmp( cbc_dbl_options[i] . aimms_name, cbc_dbl_options[i+1] . aimms_name ) > 0 ) {
+		if ( STRICMP( cbc_dbl_options[i] . aimms_name, cbc_dbl_options[i+1] . aimms_name ) > 0 ) {
 			BUG;
 		}
 	}
@@ -561,7 +566,7 @@ void CbcSolverInfo::cbc_order_options( void )
 		} else if ( ind_dbl >= CBC_OPT_DBL_MAX ) {
 			cbc_int_options[ind_int] . order = cnt;
 			ind_int ++;
-		} else if ( stricmp( cbc_int_options[ind_int] . aimms_name,
+		} else if ( STRICMP( cbc_int_options[ind_int] . aimms_name,
 		                     cbc_dbl_options[ind_dbl] . aimms_name ) > 0 ) {
 			cbc_dbl_options[ind_dbl] . order = cnt;
 		    ind_dbl ++;
@@ -728,7 +733,13 @@ int CbcMathProgramInstance::cbc_set_options( std::list<std::string>& opt_list )
     // Get value of option for printing to status file.
         
     cbc_opt_status_file = cbc_int_opt_val[ CBC_OPT_STATUS_FILE ];
-        
+	
+#ifdef WIN32
+	if ( cbc_opt_status_file == 2 ) {
+		cbc_opt_status_file = 0;
+	}
+#endif
+    
     // Set CBC specific options. This is done by passing the options with nondefault
     // value as arguments of CbcMain1 in cbc_actually_call_solver(). Note: three is
     // added for extra arguments for CbcMain1.

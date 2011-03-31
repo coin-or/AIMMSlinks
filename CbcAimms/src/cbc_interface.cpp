@@ -224,6 +224,7 @@ void CbcMathProgramInstance::cbc_init_handle()
     cbc_handle . model_status     = MODELSTAT_NOT_SOLVED;
     cbc_handle . solver_status    = SOLVERSTAT_NOT_CALLED;
     cbc_handle . direction        = DIRECTION_MIN;
+    cbc_handle . obj_col_no       = -1;
     cbc_handle . basis            = 0;
     cbc_handle . update           = 0;
     cbc_handle . solved           = false;
@@ -450,7 +451,13 @@ int CbcMathProgramInstance::cbc_aimms_callback( int callback_type )
     cb_int[ AOSI_CB_ITER          ] = cbc_handle . iter;
     cb_int[ AOSI_CB_SOLVE_TIME    ] = m_mp->GetTime() - cbc_start_time;  // 1/100'th of a sec
     cb_int[ AOSI_CB_NODE          ] = -1;
-    cb_int[ AOSI_CB_NR_NODES      ] = -1;
+    
+    if ( cbc_handle . model_type == CBC_MIP_MODEL ) {
+    	cb_int[ AOSI_CB_NR_NODES  ] = cbc_handle . nodes;
+    } else {
+    	cb_int[ AOSI_CB_NR_NODES  ] = 0;
+    }
+    
     cb_int[ AOSI_CB_NR_BR_NODES   ] = -1;
     cb_int[ AOSI_CB_NR_NODES_LEFT ] = -1;
  
@@ -2514,11 +2521,12 @@ void CbcMathProgramInstance::cbc_init_solve( _LONG_T *int_param, double *dbl_par
     cbc_handle . model_status    = MODELSTAT_NOT_SOLVED;
     cbc_handle . solver_status   = SOLVERSTAT_NOT_CALLED;
 
-    cbc_handle . nonzeros        = int_param[ IPARAM_NONZEROS  ];
-    cbc_handle . nrows_upd       = int_param[ IPARAM_UPD_R     ];
-    cbc_handle . ncols_upd       = int_param[ IPARAM_UPD_C     ];
-    cbc_handle . nonzeros_upd    = int_param[ IPARAM_UPD_NZ    ];
-    cbc_handle . direction       = int_param[ IPARAM_DIRECTION ];
+    cbc_handle . nonzeros        = int_param[ IPARAM_NONZEROS   ];
+    cbc_handle . nrows_upd       = int_param[ IPARAM_UPD_R      ];
+    cbc_handle . ncols_upd       = int_param[ IPARAM_UPD_C      ];
+    cbc_handle . nonzeros_upd    = int_param[ IPARAM_UPD_NZ     ];
+    cbc_handle . direction       = int_param[ IPARAM_DIRECTION  ];
+    cbc_handle . obj_col_no      = int_param[ IPARAM_OBJ_COL_NO ];
     
     if ( ( cbc_handle . model_type == CBC_MIP_MODEL  ) && 
          ( cbc_int_opt_val[ CBC_OPT_MIP_BASIS ] == 0 ) ) {
@@ -2595,6 +2603,29 @@ int CbcMathProgramInstance::cbc_get_model_type( _LONG_T *int_param )
     }
     
     return 0;
+}
+
+
+// The function cbc_calculate_objective()
+double CbcMathProgramInstance::cbc_calculate_objective( void )
+{
+	int             i, ncols;
+	double          obj;
+	const double   *values, *obj_coef;
+	
+	if ( cbc_handle . obj_col_no < 0 ) return 0.0;
+	
+	values   = cbc_model->getColSolution();
+	obj_coef = cbc_model->getObjCoefficients();
+	
+	ncols = cbc_handle . ncols;
+	
+	obj = 0.0;
+	for ( i=0; i<ncols; i++ ) {
+		obj += obj_coef[i] * values[i];
+	}
+	
+    return obj;
 }
 
 
@@ -2710,7 +2741,15 @@ int CbcMathProgramInstance::cbc_get_solution_info_mip( void )
 
     // Get solution information (objective, solver status, etc).
     
-    cbc_handle . objval        = cbc_model->getObjValue();
+    // The value returned by cbc_model->getObjValue() is not always correct and
+    // therefore we calculate the objective ourselves (unless we are solving a MPS
+    // file in which case we cannot calculate the objective).
+    
+    if ( cbc_handle . mps_type > 0 ) {   // MPS solve
+    	cbc_handle . objval    = cbc_model->getObjValue();
+    } else {
+    	cbc_handle . objval    = cbc_calculate_objective();
+    }
     cbc_handle . iter          = cbc_model->getIterationCount();
     cbc_handle . nodes         = cbc_model->getNodeCount();
     cbc_handle . mip_best_poss = cbc_model->getBestPossibleObjValue();
@@ -2795,7 +2834,8 @@ int CbcMathProgramInstance::cbc_get_solution_info_mip( void )
     	fprintf( cbc_logfile, "Solve number    : %d\n",   cbc_solve_no               );
         fprintf( cbc_logfile, "Model status    : %ld\n",  cbc_handle . model_status  );
         fprintf( cbc_logfile, "Solver status   : %ld\n",  cbc_handle . solver_status );
-        fprintf( cbc_logfile, "Objective value : %.5f\n", cbc_handle . objval        );
+        fprintf( cbc_logfile, "Objective value : %.5f   (CBC: %.5f)\n",
+                 cbc_handle . objval, cbc_model->getObjValue() );
         fprintf( cbc_logfile, "# Iterations    : %d\n",   cbc_handle . iter          );
         fprintf( cbc_logfile, "# Nodes         : %d\n",   cbc_handle . nodes         );
         fflush( cbc_logfile );
@@ -2812,13 +2852,18 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
 	char       dir[MAX_DIR_LEN], file_name[1024], buf[256];
     _LONG_T    len;
     int        i, opt_list_length, res = 0;
+#ifdef WIN32
     FILE      *sta_file = NULL;
+#else // LINUX
+    int        fd = -1;
+    bool       redirect_stdout = false;
+#endif
     
     assert( cbc_args );
     
     // Open CBC output file (if wanted).
 	
-	if ( cbc_opt_status_file ) {
+	if ( cbc_opt_status_file == 1 ) {
 		len = MAX_DIR_LEN;
 #ifdef _AIMMS390_
 		m_si_spec->GetLogDirName( dir, &len );
@@ -2826,24 +2871,40 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
         m_gen->GetLogDirName( dir, &len );
 #endif
         
+#ifdef WIN32
         if ( len >= 0 ) {
-            sprintf( file_name, "%s\\%s", dir, CBC_STATUS_FILE_NAME );
+            sprintf( file_name, "%s/%s", dir, CBC_STATUS_FILE_NAME );
     
             sta_file = fopen( file_name, "a" );
-        }
-		
-    	if ( sta_file ) {
-    		CoinMessageHandler handler( sta_file );
-    		
-    		cbc_model->passInMessageHandler( &handler );
-    		
+            
+    		if ( sta_file ) {
+    			CoinMessageHandler handler( sta_file );
+    			
+    			cbc_model->passInMessageHandler( &handler );
+    			
 #ifdef DEBUG
-			OsiSolverInterface * solver = cbc_model->solver();
-    		OsiClpSolverInterface * clpSolver = dynamic_cast<OsiClpSolverInterface *> (solver);
-  			clp_solver->messageHandler()->setPrefix( true );
-  			clp_solver->messageHandler()->setLogLevel( 1 );
+				OsiSolverInterface * solver = cbc_model->solver();
+    			OsiClpSolverInterface * clpSolver = dynamic_cast<OsiClpSolverInterface *> (solver);
+  				clp_solver->messageHandler()->setPrefix( true );
+  				clp_solver->messageHandler()->setLogLevel( 1 );
 #endif
+			}
     	}
+#else // LINUX
+		if ( len >= 0 ) {
+			sprintf( file_name, "%s/%s", dir, CBC_STATUS_FILE_NAME );
+			
+			fd = dup( fileno(stdout) );
+			freopen( file_name, "a", stdout );
+			
+			redirect_stdout = true;
+		}
+	} else if ( cbc_opt_status_file == 0 ) {   // No output
+		fd = dup( fileno(stdout) );
+		freopen( "/dev/null", "w", stdout );
+		
+		redirect_stdout = true;
+#endif
     }
     
     // Install callback for displaying progress information and for passing incumbents.
@@ -2882,9 +2943,17 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
 		m_gen->PassMessage( AOSI_PRIO_ALWAYS, buf );
 	}
 	
+#ifdef WIN32
 	if ( sta_file ) {
 		fclose( sta_file );
 	}
+#else // LINUX
+	if ( redirect_stdout ) {
+		fflush( stdout );
+		dup2( fd, fileno(stdout) );
+		close( fd );
+	}
+#endif
 	
 	return res;
 }
@@ -3130,6 +3199,7 @@ _LONG_T CbcSolverInfo::GetInitialInfo( _LONG_T *info_int, double *info_dbl, char
                                            AOSI_CAPAB_RENUMBER_DEL  ;
     
     info_int[ AOSI_IINFO_CAPAB2_FLAGS  ] = AOSI_CAPAB2_NEW_OSI      |
+                                           AOSI_CAPAB2_NO_ASYNCHR   |
                                            AOSI_CAPAB2_SOLVE_MPS    ;
     
     info_int[ AOSI_IINFO_NOPT_CAT      ] = CBC_CAT_MAX;      // Must be >= 1
@@ -3168,7 +3238,7 @@ _LONG_T CbcSolverInfo::GetInitialInfo( _LONG_T *info_int, double *info_dbl, char
     m_gen->GetEnvironment( "AIMMSPROJECT", cbc_project_dir, len );
     if ( cbc_project_dir[0] != '\0' ) {
         len = (_LONG_T) strlen( cbc_project_dir );
-        cbc_project_dir[len]   = '\\';
+        cbc_project_dir[len]   = '/';
         cbc_project_dir[len+1] = '\0';
     }
     
@@ -3239,7 +3309,7 @@ _LONG_T CbcSolverInfo::GetLogFile( _TCHAR *file_name )
 #endif
     assert( len != -1 );
     
-    SPRINTF( file_name, _T("%s\\%s"), dir, _T(CBC_STATUS_FILE_NAME) );
+    SPRINTF( file_name, _T("%s/%s"), dir, _T(CBC_STATUS_FILE_NAME) );
         
     return AOSI_SUCCESS;
 }
@@ -4110,4 +4180,6 @@ _LONG_T CbcMathProgramInstance::CalculateSubgradient(
 	
 	return AOSI_FAILURE;
 }
+
+
 
