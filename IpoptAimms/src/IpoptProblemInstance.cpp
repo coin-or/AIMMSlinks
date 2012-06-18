@@ -11,6 +11,7 @@
 
 // Includes necessary IPOPT header files
 #include "libIpopt.h"
+#include <string.h>
 
 
 //@< The function |IpoptProblemInstance::Constructor()| @> @;

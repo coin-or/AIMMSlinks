@@ -154,6 +154,8 @@ MyEventHandler3::event(CbcEvent whichEvent)
     	cbc_current->phase           = AOSI_PHASE_MIP;
     	cbc_current->nodes           = model_->getNodeCount();
     	cbc_current->mip_best_poss   = model_->getBestPossibleObjValue();
+    	
+    	cmpi->cbc_progress_info( false );
 	    
 	    res = cmpi->cbc_aimms_callback( AOSI_CB_INT_SOLUTION );
 	    if ( res == AOSI_CB_RET_INTR ) {

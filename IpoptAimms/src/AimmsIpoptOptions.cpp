@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include "libIpopt.h"
 #include "AimmsIpoptOptions.h"
-
+#include <string.h>
 
 
 //@< The function |IPOPT_order_options()| @> @;
@@ -1620,6 +1620,16 @@ int IpoptMathProgramInstance::IPOPT_Set_Options( Ipopt::SmartPtr<Ipopt::IpoptApp
 		} else {
 			ipopt_int_opt_val[IPOPT_OPT_HESSIAN_APPROXIMATION] = 2;    // Quasi-Newton/limited-memory
 		}
+	}
+	
+	
+	// If all variables are fixed then IPOPT might run into all kind of trouble
+	// especially during the "finalize solution call" (bug 23219). Changing the
+	// way fixed variables are treated seems to help.
+	
+	if ( IPOPT_handle.ncols_fix >= IPOPT_handle.ncols ) {
+		ipopt_int_opt_val[IPOPT_OPT_FIXED_VARIABLE_TREATMENT] = 1;
+		//bReturn = app->Options()->SetStringValue( "skip_finalize_solution_call", "yes" );
 	}
 	
 	

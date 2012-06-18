@@ -13,6 +13,7 @@
 #include <windows.h>
 #endif
 #include <stddef.h>
+#include <assert.h>
 
 #include "IAimmsOSI.h"							// Header file of AIMMS open solver interface
 #include "AimmsIpoptConfig.h"					// Used to handle different linear solvers that may be available
@@ -75,6 +76,7 @@ typedef struct IPOPT_handle_record
     _LONG_T     hess_present;          // If 1, Hessian is available
     int         n;
     int         m;
+    _LONG_T     ncols_fix;             // Number of fixed variables
 
     _LONG_T     direction;
     _LONG_T     obj_colno;

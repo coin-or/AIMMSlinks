@@ -14,8 +14,9 @@
 
 // Includes necessary IPOPT header files
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
-#include "libIpopt.h"							// Ipopt Interface header file
+#include "libIpopt.h"						// Ipopt Interface header file
 
 
 //@< The function |GetSolverInfo()| @> @;
@@ -154,6 +155,7 @@ void IpoptMathProgramInstance::IPOPT_Init_Handle( void )
     IPOPT_handle.solver_status = AOSI_SOLVERSTAT_NOT_CALLED;
     IPOPT_handle.obj           = AOSI_NA_REP;
     IPOPT_handle.mem_in_use    = 0;
+    IPOPT_handle.ncols_fix     = 0;
 }
 
 
@@ -192,12 +194,15 @@ int IpoptSolverInfo::RegisterAsSolver( char* name, _LONG_T* model_flags )
     
     sprintf( version, "%s\0", IPOPT_VERSION );
     
-    char *str1 = strstr( version, "." );
-    if ( str1 ) {
-    	if ( strlen(str1) >= 2 ) {
-    		char *str2 = strstr( &str1[1], "." );
-    		if ( str2 ) {
-    			str2[0] = '\0';
+    char *str = strstr( version, "3.9" );
+    if ( str ) {
+    	char *str1 = strstr( version, "." );
+    	if ( str1 ) {
+    		if ( strlen(str1) >= 2 ) {
+    			char *str2 = strstr( &str1[1], "." );
+    			if ( str2 ) {
+    				str2[0] = '\0';
+    			}
     		}
     	}
     }
@@ -829,7 +834,7 @@ int IpoptMathProgramInstance::IPOPT_Solve_Model( _LONG_T* int_param, double* dbl
 	// Get the actual problem from AIMMS
 	nResult = IPOPT_Get_Model();
 	if ( nResult ) {		
-		// An error occurred wile retrieving the model
+		// An error occurred while retrieving the model
 	    *mem_used = IPOPT_handle.mem_in_use;
 	    return AOSI_FAILURE;
 	}
@@ -1063,10 +1068,18 @@ int IpoptMathProgramInstance::IPOPT_Get_Model( void )
 #ifdef DEBUG
     print_columns( ncols, number, lb, lev , ub );
 #endif
- 
+ 	
+ 	// Take care of infinite bounds. Count number of fixed variables.
+ 	
+ 	IPOPT_handle.ncols_fix = 0; 
+ 	
     for ( i=0; i<ncols; i++ ) {
         if ( lb[ i ] < -IPOPT_INF ) lb[ i ] = -IPOPT_INF;
         if ( ub[ i ] >  IPOPT_INF ) ub[ i ] =  IPOPT_INF;
+        
+        if ( lb[ i ] >= ub[i] ) {
+        	IPOPT_handle.ncols_fix ++;
+        }
     }
 
     if ( nrows != m_mp->GetRowData( /* is_update */ 0, nrows, &number,
