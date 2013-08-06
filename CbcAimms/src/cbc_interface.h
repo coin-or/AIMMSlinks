@@ -31,10 +31,6 @@
 #include "CbcEventHandler.hpp"
 #include "CbcBranchActual.hpp"              // For CbcSOS
 
-// Define _AIMMS390_ if you want to build the AIMMS-CBC link for AIMMS 3.9. In that case you should
-// use the file 'IAimmsOSI.h' and 'aimmsosi_compat.h' files of AIMMS 3.9.
-
-//#define _AIMMS390_
 
 #define BUG                assert( 0 == 1 )
 
@@ -50,8 +46,23 @@
 #define CBC_MM_MAX_ELEM    100              // Maximal number of matrix elements updates
                                             // for matrix manipulation in each call
 
-#define CBC_STATUS_FILE_NAME  "cbc.sta"
+#if CBC_VERSION_MAJOR == 2 && CBC_VERSION_MINOR == 8 && CBC_VERSION_RELEASE == 0
+#define CBC_VERSION_NO        280
+#else
+#define CBC_VERSION_NO        275
+#endif
+
+#if CBC_VERSION_NO == 280
+#define CBC_STATUS_FILE_NAME_ASC  "cbc280.sta"
+#define CBC_STATUS_FILE_NAME_UNI  _T("cbc280.sta")
+#define CBC_LOG_FILE_NAME     "cbc280.log"
+#define CBC_HELP_FILE_NAME    "AimmsCbc280.chm"
+#else
+#define CBC_STATUS_FILE_NAME_ASC  "cbc.sta"
+#define CBC_STATUS_FILE_NAME_UNI  _T("cbc.sta")
 #define CBC_LOG_FILE_NAME     "cbc.log"
+#define CBC_HELP_FILE_NAME    "AimmsCbc.chm"
+#endif
 
 #define CBC_LP_MODEL          0
 #define CBC_MIP_MODEL         1
@@ -85,6 +96,12 @@ typedef struct cbc_handle_record {
                                     // -1 : minimize objective function
                                     //  0 : find a feasible solution
                                     //  1 : maximize objective function
+#if CBC_VERSION_NO >= 280
+    _LONG_T  prev_direction;        // Optimization direction of previous solve
+                                    // -1 : minimize objective function
+                                    //  0 : find a feasible solution
+                                    //  1 : maximize objective function
+#endif
     _LONG_T  obj_col_no;            // Number of objective column (if any)
     _LONG_T  basis;                 // If 1, the provided basis is used
     _LONG_T  update;                // If 1, an updated version is solved
@@ -96,6 +113,7 @@ typedef struct cbc_handle_record {
     double   objval;                // Objective function value
     double   obj_best;              // Objective function value of best integer solution MIP
     double   mip_best_poss;         // LP value of best remaining node in MIP
+    double   obj_multiplier;        // Objective multiplier
     int      iter;                  // Total number of iterations performed
     int      nodes;                 // Total number of nodes in branch-and-bound tree
     int      nodes_left;            // Total number of nodes left in branch-and-bound tree
@@ -149,7 +167,7 @@ extern void __cdecl saveSolution(const ClpSimplex * lpSolver,std::string fileNam
 #define SPRINTF _stprintf
 #define STRICMP _stricmp
 #else // WIN32
-#define SPRINTF sprintf
+#define SPRINTF _stprintf
 #define STRICMP strcasecmp
 #endif // WIN32
 

@@ -100,13 +100,13 @@ MyEventHandler3::event(CbcEvent whichEvent)
 	
 	if ( cbc_current->iter >= cmpi->cbc_next_to_print_iter ) {
     	if ( model_->bestSolution() ) {
-    		cbc_current->obj_best        = model_->getObjValue();
+    		cbc_current->obj_best        = cbc_current->obj_multiplier * model_->getObjValue();
     		cbc_current->mip_is_feasible = true;
     		cbc_current->phase           = AOSI_PHASE_MIP;
     	}
     	
     	cbc_current->nodes         = model_->getNodeCount();
-    	cbc_current->mip_best_poss = model_->getBestPossibleObjValue();
+    	cbc_current->mip_best_poss = cbc_current->obj_multiplier * model_->getBestPossibleObjValue();
     	
     	cmpi->cbc_progress_info( false );
     	
@@ -149,11 +149,11 @@ MyEventHandler3::event(CbcEvent whichEvent)
 	    res = cmpi->cbc_is_feasible_solution();
 #endif
 	    
-    	cbc_current->obj_best        = model_->getObjValue();
+    	cbc_current->obj_best        = cbc_current->obj_multiplier * model_->getObjValue();
     	cbc_current->mip_is_feasible = true;
     	cbc_current->phase           = AOSI_PHASE_MIP;
     	cbc_current->nodes           = model_->getNodeCount();
-    	cbc_current->mip_best_poss   = model_->getBestPossibleObjValue();
+    	cbc_current->mip_best_poss   = cbc_current->obj_multiplier * model_->getBestPossibleObjValue();
     	
     	cmpi->cbc_progress_info( false );
 	    
@@ -167,9 +167,9 @@ MyEventHandler3::event(CbcEvent whichEvent)
 	if ( cbc_current->cb_flags & AOSI_CB_ITERATION ) {
     	if ( ( cbc_current->cb_iter                      ) &&
     	     ( cbc_current->iter >= cbc_current->cb_iter ) ) {
-    		cbc_current->obj_best        = model_->getObjValue();
+    		cbc_current->obj_best        = cbc_current->obj_multiplier * model_->getObjValue();
     		cbc_current->nodes           = model_->getNodeCount();
-    		cbc_current->mip_best_poss   = model_->getBestPossibleObjValue();
+    		cbc_current->mip_best_poss   = cbc_current->obj_multiplier * model_->getBestPossibleObjValue();
 	    	
 	    	res = cmpi->cbc_aimms_callback( AOSI_CB_ITERATION );
 	    	if ( res == AOSI_CB_RET_INTR ) {

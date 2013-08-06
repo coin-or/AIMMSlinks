@@ -9,7 +9,6 @@
 #include "cbc_interface.h"
 #include "cbc_options.h"
 
-
 // The function cbc_order_options()
 // The function cbc_init_global_options()
 // The function cbc_init_options()
@@ -78,6 +77,9 @@ static int  cbc_int_opt_low[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_PRESOLVE                      */   0,
 /* CBC_OPT_PRIMAL_PIVOT                  */  -1,
 /* CBC_OPT_PROBING_CUTS                  */   0,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_PROXIMITY_SEARCH              */   0,
+#endif
 /* CBC_OPT_REDUCE_AND_SPLIT_CUTS         */   0,
 /* CBC_OPT_REFACTOR_INTERVAL             */   1,
 /* CBC_OPT_RESIDUAL_CAPACITY_CUTS        */   0,
@@ -85,6 +87,9 @@ static int  cbc_int_opt_low[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_ROUNDING_HEURISTIC            */   0,
 /* CBC_OPT_SCALING                       */  -1,
 /* CBC_OPT_SIFTING                       */  -1,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_SLOW_CUT_PASSES               */  -1,
+#endif
 /* CBC_OPT_STATUS_FILE                   */   0,
 /* CBC_OPT_STRONG_BRANCHING              */   0,
 #ifdef CBC_PARALLEL
@@ -92,7 +97,10 @@ static int  cbc_int_opt_low[ CBC_OPT_INT_MAX ] = {
 #endif
 /* CBC_OPT_TRUST_PSEUDO_COSTS            */  -3,
 /* CBC_OPT_TWO_MIR_CUTS                  */   0,
-/* CBC_OPT_VARIABLE_SELECTION            */   0
+/* CBC_OPT_VARIABLE_SELECTION            */   0,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_ZERO_HALF_CUTS                */   0,
+#endif
 };
 
 
@@ -133,6 +141,9 @@ static int  cbc_int_opt_def[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_PRESOLVE                      */   1,
 /* CBC_OPT_PRIMAL_PIVOT                  */  -1,
 /* CBC_OPT_PROBING_CUTS                  */   3,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_PROXIMITY_SEARCH              */   0,
+#endif
 /* CBC_OPT_REDUCE_AND_SPLIT_CUTS         */   0,
 /* CBC_OPT_REFACTOR_INTERVAL             */   200,
 /* CBC_OPT_RESIDUAL_CAPACITY_CUTS        */   0,
@@ -140,6 +151,9 @@ static int  cbc_int_opt_def[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_ROUNDING_HEURISTIC            */   1,
 /* CBC_OPT_SCALING                       */  -1,
 /* CBC_OPT_SIFTING                       */  -1,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_SLOW_CUT_PASSES               */   10,
+#endif
 /* CBC_OPT_STATUS_FILE                   */   0,
 /* CBC_OPT_STRONG_BRANCHING              */   5,
 #ifdef CBC_PARALLEL
@@ -147,7 +161,10 @@ static int  cbc_int_opt_def[ CBC_OPT_INT_MAX ] = {
 #endif
 /* CBC_OPT_TRUST_PSEUDO_COSTS            */   5,
 /* CBC_OPT_TWO_MIR_CUTS                  */   3,
-/* CBC_OPT_VARIABLE_SELECTION            */   0
+/* CBC_OPT_VARIABLE_SELECTION            */   0,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_ZERO_HALF_CUTS                */   0,
+#endif
 };
 
 
@@ -188,6 +205,9 @@ static int  cbc_int_opt_up[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_PRESOLVE                      */   2,
 /* CBC_OPT_PRIMAL_PIVOT                  */   4,
 /* CBC_OPT_PROBING_CUTS                  */   4,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_PROXIMITY_SEARCH              */   1,
+#endif
 /* CBC_OPT_REDUCE_AND_SPLIT_CUTS         */   4,
 /* CBC_OPT_REFACTOR_INTERVAL             */   999999,
 /* CBC_OPT_RESIDUAL_CAPACITY_CUTS        */   4,
@@ -195,6 +215,9 @@ static int  cbc_int_opt_up[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_ROUNDING_HEURISTIC            */   3,
 /* CBC_OPT_SCALING                       */   2,
 /* CBC_OPT_SIFTING                       */   5000000,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_SLOW_CUT_PASSES               */   2000000,
+#endif
 /* CBC_OPT_STATUS_FILE                   */   2,
 /* CBC_OPT_STRONG_BRANCHING              */   999999,
 #ifdef CBC_PARALLEL
@@ -202,7 +225,10 @@ static int  cbc_int_opt_up[ CBC_OPT_INT_MAX ] = {
 #endif
 /* CBC_OPT_TRUST_PSEUDO_COSTS            */   2000000,
 /* CBC_OPT_TWO_MIR_CUTS                  */   4,
-/* CBC_OPT_VARIABLE_SELECTION            */   2
+/* CBC_OPT_VARIABLE_SELECTION            */   2,
+#if CBC_VERSION_NO >= 280
+/* CBC_OPT_ZERO_HALF_CUTS                */   4,
+#endif
 };
 
 
@@ -215,7 +241,7 @@ static double  cbc_dbl_opt_low[ CBC_OPT_DBL_MAX ] = {
 /* CBC_OPT_OBJ_SCALE_FACTOR           */  -1.0e+20,
 /* CBC_OPT_PRESOLVE_TOL               */   1.0e-20,
 /* CBC_OPT_PRIMAL_FEAS_TOL            */   1.0e-20,
-/* CBC_OPT_RHS_SCALE_FACTOR           */  -1.0e+20
+/* CBC_OPT_RHS_SCALE_FACTOR           */  -1.0e+20,
 };
 
 
@@ -226,7 +252,7 @@ static double  cbc_dbl_opt_def[ CBC_OPT_DBL_MAX ] = {
 /* CBC_OPT_OBJ_SCALE_FACTOR           */   1.0,
 /* CBC_OPT_PRESOLVE_TOL               */   1.0e-8,
 /* CBC_OPT_PRIMAL_FEAS_TOL            */   1.0e-7,
-/* CBC_OPT_RHS_SCALE_FACTOR           */   1.0
+/* CBC_OPT_RHS_SCALE_FACTOR           */   1.0,
 };
 
 
@@ -237,7 +263,7 @@ static double  cbc_dbl_opt_up[ CBC_OPT_DBL_MAX ] = {
 /* CBC_OPT_OBJ_SCALE_FACTOR           */   1.0e+20,
 /* CBC_OPT_PRESOLVE_TOL               */   1.0e+12,
 /* CBC_OPT_PRIMAL_FEAS_TOL            */   1.0e+12,
-/* CBC_OPT_RHS_SCALE_FACTOR           */   1.0e+20
+/* CBC_OPT_RHS_SCALE_FACTOR           */   1.0e+20,
 };
 
 
@@ -479,6 +505,10 @@ static cbc_option_rec  cbc_int_options[] = {
   0, "Primal_pivot"                      , "-primalPivot"                                               },
 { CBC_OPT_PROBING_CUTS                , CBC_CAT_MIP_CUTS , 0 , 1 , akeyw_cuts        , ckeyw_cuts       ,
   0, "Probing_cuts"                      , "-probingCuts"                                               },
+#if CBC_VERSION_NO >= 280
+{ CBC_OPT_PROXIMITY_SEARCH            , CBC_CAT_MIP_HEUR , 0 , 1 , akeyw_off_on      , NULL             ,
+  0, "Proximity_search"                  , "-proximity"                                                 },
+#endif
 { CBC_OPT_REDUCE_AND_SPLIT_CUTS       , CBC_CAT_MIP_CUTS , 0 , 1 , akeyw_cuts        , ckeyw_cuts       ,
   0, "Reduce_and_split_cuts"             , "-reduceAndSplitCuts"                                        },
 { CBC_OPT_REFACTOR_INTERVAL           , CBC_CAT_GENERAL  , 0 , 0 , NULL              , NULL             ,
@@ -493,6 +523,10 @@ static cbc_option_rec  cbc_int_options[] = {
   0, "Scaling"                           , "-scaling"                                                   },
 { CBC_OPT_SIFTING                     , CBC_CAT_GENERAL  , 0 , 0 , NULL              , NULL             ,
   0, "Sifting"                           , "-sprintCrash"                                               },
+#if CBC_VERSION_NO >= 280
+{ CBC_OPT_SLOW_CUT_PASSES             , CBC_CAT_MIP_CUTS , 0 , 0 , NULL              , NULL             ,
+  0, "Slow_cut_passes"                   , "-slowcutpasses"                                             },
+#endif
 { CBC_OPT_STATUS_FILE                 , CBC_CAT_LOGGING  , 0 , 1 , akeyw_status_file , NULL             ,
   0, "Status_file"                       , NULL                                                         },
 { CBC_OPT_STRONG_BRANCHING            , CBC_CAT_MIP      , 0 , 0 , NULL              , NULL             ,
@@ -506,9 +540,13 @@ static cbc_option_rec  cbc_int_options[] = {
 { CBC_OPT_TWO_MIR_CUTS                , CBC_CAT_MIP_CUTS , 0 , 1 , akeyw_gomory_cuts , ckeyw_gomory_cuts,
   0, "Two_mir_cuts"                      , "-twoMirCuts"                                                },
 { CBC_OPT_VARIABLE_SELECTION          , CBC_CAT_MIP      , 0 , 1 , akeyw_var_select  , ckeyw_var_select ,
-  0, "Variable_selection"                , "-costStrategy"                                              }
+  0, "Variable_selection"                , "-costStrategy"                                              },
+#if CBC_VERSION_NO >= 280
+{ CBC_OPT_ZERO_HALF_CUTS              , CBC_CAT_MIP_CUTS , 0 , 1 , akeyw_gomory_cuts , ckeyw_cuts       ,
+  0, "Zero_half_cuts"                    , "-zeroHalfCuts"                                              },
+#endif
 };
-  
+
 
 // Table of double options.
 
@@ -526,7 +564,7 @@ static cbc_option_rec  cbc_dbl_options[] = {
 { CBC_OPT_PRIMAL_FEAS_TOL             , CBC_CAT_GENERAL  , 0 , 0 , NULL, NULL ,
   0, "Primal_feasibility_tolerance"      , "-primalTolerance"                 },
 { CBC_OPT_RHS_SCALE_FACTOR            , CBC_CAT_GENERAL  , 0 , 0 , NULL, NULL ,
-  0, "RHS_scale_factor"                  , "-rhsScale"                        }
+  0, "RHS_scale_factor"                  , "-rhsScale"                        },
 };
 
 
@@ -775,7 +813,7 @@ int CbcMathProgramInstance::cbc_set_options( std::list<std::string>& opt_list )
     	
         if ( cbc_dbl_options[i] . cbc_name            &&
              cbc_dbl_opt_val[i] != cbc_dbl_opt_def[i] ) {
-            opt_list.push_back( cbc_int_options[i] . cbc_name );
+            opt_list.push_back( cbc_dbl_options[i] . cbc_name );
             
 			sprintf( value, "%g\0", cbc_dbl_opt_val[i] );
 			opt_list.push_back( value );
@@ -852,7 +890,7 @@ int CbcMathProgramInstance::cbc_set_options( std::list<std::string>& opt_list )
     	dval = 1.0e30;
     } else {
     	if ( cbc_handle . direction == DIRECTION_MAX ) {
-    		dval = cbc_handle . obj_constant - cbc_mip_cutoff;
+			dval = ( cbc_handle . obj_constant - cbc_mip_cutoff ) * cbc_handle . obj_multiplier;
     	} else {
     		dval = cbc_mip_cutoff - cbc_handle . obj_constant;
     	}

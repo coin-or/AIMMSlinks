@@ -9,7 +9,7 @@
 #include "cbc_interface.h"
 #include "cbc_options.h"
 #include "cbc_event.h"
-
+#include <pdttchar.h>
 
 // The function GetSolverInfo()
 // The function CbcMathProgramInstance()
@@ -119,19 +119,11 @@ extern "C" AimmsOSI_API(ISolverInfo *) GetSolverInfo(IAimmsSolverConnection *gen
 
 
 // The function CbcMathProgramInstance()
-#ifdef _AIMMS390_
-CbcMathProgramInstance::CbcMathProgramInstance(IAimmsMathProgramInfo *mp, IAimmsSolverConnection *gen,
-                                               IAimmsExtendedSolverConnection *si_spec)
-#else
 CbcMathProgramInstance::CbcMathProgramInstance(IAimmsMathProgramInfo *mp, IAimmsSolverConnection *gen)
-#endif
         : m_gen(gen)
         , m_mp(mp)
         , m_manipulation(mp->GetMatrixManipulationInfo())
         , m_callback(mp->GetSolverCallback())
-#ifdef _AIMMS390_
-        , m_si_spec(si_spec)
-#endif
         , cbc_model(0)
         , clp_solver(0)
         , cbc_mp_init(false)
@@ -173,11 +165,7 @@ void CbcMathProgramInstance::Delete(void)
 // The function CbcSolverInfo()
 ISolverMathProgramInstance *CbcSolverInfo::CreateMathProgramInstance(IAimmsMathProgramInfo *mp)
 {
-#ifdef _AIMMS390_
-    return new CbcMathProgramInstance(mp, m_gen, m_si_spec);
-#else
 	return new CbcMathProgramInstance(mp, m_gen);
-#endif
 }
 
 
@@ -223,7 +211,10 @@ void CbcMathProgramInstance::cbc_init_handle()
     cbc_handle . nonzeros_upd     = 0;
     cbc_handle . model_status     = MODELSTAT_NOT_SOLVED;
     cbc_handle . solver_status    = SOLVERSTAT_NOT_CALLED;
-    cbc_handle . direction        = DIRECTION_MIN;
+    cbc_handle . direction        = 0;
+#if CBC_VERSION_NO >= 280
+    cbc_handle . prev_direction   = 0;
+#endif
     cbc_handle . obj_col_no       = -1;
     cbc_handle . basis            = 0;
     cbc_handle . update           = 0;
@@ -232,6 +223,7 @@ void CbcMathProgramInstance::cbc_init_handle()
     cbc_handle . objval           = AIMMS_INF;
     cbc_handle . obj_best         = AIMMS_INF;
     cbc_handle . mip_best_poss    = AIMMS_INF;
+    cbc_handle . obj_multiplier   = 1.0;
     cbc_handle . iter             = 0;
     cbc_handle . nodes            = 0;
     cbc_handle . nodes_left       = 0;
@@ -508,55 +500,55 @@ void CbcMathProgramInstance::cbc_print_parameters( _LONG_T options, _LONG_T *int
 {
 	FILE   *f = cbc_logfile;
 	
-    fprintf( f, "Options                                   : %ld\n",
+    fprintf( f, "Options                                   : %d\n",
              options );
-    fprintf( f, "Number of rows                            : %ld\n",
+    fprintf( f, "Number of rows                            : %d\n",
              int_param[ IPARAM_ROWS ] );
-    fprintf( f, "Number of update rows                     : %ld\n",
+    fprintf( f, "Number of update rows                     : %d\n",
              int_param[ IPARAM_UPD_R ] );
-    fprintf( f, "Number of SOS 1 rows                      : %ld\n",
+    fprintf( f, "Number of SOS 1 rows                      : %d\n",
              int_param[ IPARAM_SOS1_R ] );
-    fprintf( f, "Number of SOS 2 rows                      : %ld\n",
+    fprintf( f, "Number of SOS 2 rows                      : %d\n",
              int_param[ IPARAM_SOS2_R ] );
-    fprintf( f, "Number of columns                         : %ld\n",
+    fprintf( f, "Number of columns                         : %d\n",
              int_param[ IPARAM_COLS ] );
-    fprintf( f, "Number of updated columns                 : %ld\n",
+    fprintf( f, "Number of updated columns                 : %d\n",
              int_param[ IPARAM_UPD_C ] );
-    fprintf( f, "Number of integer columns                 : %ld\n",
+    fprintf( f, "Number of integer columns                 : %d\n",
              int_param[ IPARAM_INT_C ] );
-    fprintf( f, "Number of semi-continuous columns         : %ld\n",
+    fprintf( f, "Number of semi-continuous columns         : %d\n",
              int_param[ IPARAM_SEMI_C ] );
-    fprintf( f, "Number of semi-continuous integer columns : %ld\n",
+    fprintf( f, "Number of semi-continuous integer columns : %d\n",
              int_param[ IPARAM_SEMI_INT_C ] );
-    fprintf( f, "Number of non-zeros                       : %ld\n",
+    fprintf( f, "Number of non-zeros                       : %d\n",
              int_param[ IPARAM_NONZEROS ] );
-    fprintf( f, "Number of non-zeros of obj.               : %ld\n",
+    fprintf( f, "Number of non-zeros of obj.               : %d\n",
              int_param[ IPARAM_OBJ_NZ ] );
-    fprintf( f, "Number of updated non-zeros               : %ld\n",
+    fprintf( f, "Number of updated non-zeros               : %d\n",
              int_param[ IPARAM_UPD_NZ ] );
-    fprintf( f, "Number of SOS 1 non-zeros                 : %ld\n",
+    fprintf( f, "Number of SOS 1 non-zeros                 : %d\n",
              int_param[ IPARAM_SOS1_NZ ] );
-    fprintf( f, "Number of SOS 2 non-zeros                 : %ld\n",
+    fprintf( f, "Number of SOS 2 non-zeros                 : %d\n",
              int_param[ IPARAM_SOS2_NZ ] );
     fprintf( f, "Optimization direction                    : %s\n",
              ( int_param[ IPARAM_DIRECTION ] == DIRECTION_MIN ) ? "Minimize" : "Maximize" );
     fprintf( f, "Objective constant                        : %12.5e\n",
              dbl_param[ DPARAM_OBJECTIVE_CONST ] );
-    fprintf( f, "Basis provided                            : %ld\n",
+    fprintf( f, "Basis provided                            : %d\n",
              int_param[ IPARAM_BASIS ] );
-    fprintf( f, "Number of ranged rows                     : %ld\n",
+    fprintf( f, "Number of ranged rows                     : %d\n",
              int_param[ IPARAM_RANGED_R ] );
-    fprintf( f, "Number of equality rows                   : %ld\n",
+    fprintf( f, "Number of equality rows                   : %d\n",
              int_param[ IPARAM_EQUAL_R ] );
-    fprintf( f, "Maximum elements in a row                 : %ld\n",
+    fprintf( f, "Maximum elements in a row                 : %d\n",
              int_param[ IPARAM_MAX_ELEM_R ] );
-    fprintf( f, "Maximum elements in a column              : %ld\n",
+    fprintf( f, "Maximum elements in a column              : %d\n",
              int_param[ IPARAM_MAX_ELEM_C ] );
-    fprintf( f, "Number of quadratic non-zeros             : %ld\n",
+    fprintf( f, "Number of quadratic non-zeros             : %d\n",
              int_param[ IPARAM_QUAD_NZ ] );
-    fprintf( f, "Number of updated quadratic non-zeros     : %ld\n",
+    fprintf( f, "Number of updated quadratic non-zeros     : %d\n",
              int_param[ IPARAM_QUAD_UPD_NZ ] );
-    fprintf( f, "Pure diagonal quadratic matrix            : %ld\n",
+    fprintf( f, "Pure diagonal quadratic matrix            : %d\n",
              int_param[ IPARAM_QUAD_DIAGONAL ] );
     fprintf( f, "Marginal value of zero                    : %12.5e\n",
              dbl_param[ DPARAM_MARGINAL_ZERO ] );
@@ -582,7 +574,7 @@ void CbcMathProgramInstance::cbc_print_retrieved_columns( double *lower, double 
         	len = sizeof( colname );
             m_mp->GetRowColumnName( AOSI_NAME_COLUMN, number + j, colname, &len );
         	
-            fprintf( cbc_logfile, "colno %ld ", number + j );
+            fprintf( cbc_logfile, "colno %d ", number + j );
             fprintf( cbc_logfile, "lb %16.8e ", lower[j] );
             fprintf( cbc_logfile, "ub %16.8e ", upper[j] );
             if ( lev ) {
@@ -609,7 +601,7 @@ void CbcMathProgramInstance::cbc_print_column_updates( int *cols, double *lower,
 
     if ( cbc_opt_tracing ) {
         for ( j=0; j<ncols; j++ ) {
-            fprintf( cbc_logfile, "(upd) colno %ld ", cols[j] );
+            fprintf( cbc_logfile, "(upd) colno %d ", cols[j] );
             fprintf( cbc_logfile, "lb %.16E ", lower[j] );
             fprintf( cbc_logfile, "ub %.16E ", upper[j] );
             if ( obj_coef ) {
@@ -637,7 +629,7 @@ void CbcMathProgramInstance::cbc_print_deleted_columns( int ncols, int *cols )
 
     if ( cbc_opt_tracing ) {
         for ( j=0; j<ncols; j++ ) {
-            fprintf( cbc_logfile, "(delete) colno %ld\n", cols[j] );
+            fprintf( cbc_logfile, "(delete) colno %d\n", cols[j] );
         }
         
         fflush( cbc_logfile );
@@ -657,7 +649,7 @@ void CbcMathProgramInstance::cbc_print_retrieved_rows( double *row_lo, double *r
         	len = sizeof( rowname );
             m_mp->GetRowColumnName( AOSI_NAME_ROW, number + j, rowname, &len );
         	
-            fprintf( cbc_logfile, "rowno %ld ", number + j );
+            fprintf( cbc_logfile, "rowno %d ", number + j );
             fprintf( cbc_logfile, "lb %16.8e ", row_lo[j] );
             fprintf( cbc_logfile, "ub %16.8e ", row_up[j] );
             if ( row_lev ) {
@@ -683,7 +675,7 @@ void CbcMathProgramInstance::cbc_print_row_updates( int *rows, double *row_lo, d
 
     if ( cbc_opt_tracing ) {
         for ( j=0; j<nrows; j++ ) {
-            fprintf( cbc_logfile, "(upd) rowno %ld ", rows[j] );
+            fprintf( cbc_logfile, "(upd) rowno %d ", rows[j] );
             fprintf( cbc_logfile, "lb %.16E ", row_lo[j] );
             fprintf( cbc_logfile, "ub %.16E ", row_up[j] );
             fputs( "\n", cbc_logfile );
@@ -701,7 +693,7 @@ void CbcMathProgramInstance::cbc_print_deleted_rows( int nrows, int *rows )
 
     if ( cbc_opt_tracing ) {
         for ( j=0; j<nrows; j++ ) {
-            fprintf( cbc_logfile, "(delete) rowno %ld\n", rows[j] );
+            fprintf( cbc_logfile, "(delete) rowno %d\n", rows[j] );
         }
         
         fflush( cbc_logfile );
@@ -723,7 +715,7 @@ void CbcMathProgramInstance::cbc_print_retrieved_matrix_elements( int *row, int 
             len = sizeof( rowname );
             m_mp->GetRowColumnName( AOSI_NAME_ROW   , row[i], rowname, &len );        
 
-          	fprintf( cbc_logfile, "%smatrix element (%ld,%ld) = %16.8e",
+          	fprintf( cbc_logfile, "%smatrix element (%d,%d) = %16.8e",
             	                  ( upd ) ? "(upd) " : "", row[i], col[i], value[i] );
             fprintf( cbc_logfile, "   (%s, %s)\n", rowname, colname );
         }
@@ -746,15 +738,15 @@ void CbcMathProgramInstance::cbc_print_retrieved_SOS( int nsos, char *sostype, i
     	
         for ( i=0; i<nsos; i++ ) {
              fprintf( cbc_logfile,
-                      "\nsos_set %ld  sos_type %c  sos_len %ld sospri %ld\n",
+                      "\nsos_set %d  sos_type %c  sos_len %d sospri %d\n",
                       i, sostype[i], soslen[i], (int) sospri[i] );
              
-             for ( j = 0; j<soslen[i]; j++ ) {
+             for ( j=0; j<soslen[i]; j++ ) {
                   len = sizeof( buf );
                   m_mp->GetRowColumnName( AOSI_NAME_COLUMN, sosind[j], buf, &len );
                   
                   fprintf( cbc_logfile,
-                           "sosind[%ld] = %ld  sosref[%ld] = %g  (col: %s)\n",
+                           "sosind[%d] = %d  sosref[%d] = %g  (col: %s)\n",
                            j, sosind[pos+j], j, sosref[pos+j], buf );
              }
              
@@ -863,7 +855,7 @@ int CbcMathProgramInstance::cbc_is_feasible_solution( void )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for loading model\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 2;
     }
@@ -1078,7 +1070,11 @@ int CbcMathProgramInstance::cbc_write_mps( void )
         sprintf( mps_filename, "%scbc%05ld", cbc_project_dir, cbc_seq_number );
         
         if ( cbc_handle . direction == DIRECTION_MAX ) {
-        	obj_sense = -1.0;
+#if CBC_VERSION_NO >= 280
+        	obj_sense = 1.0;
+#else
+			obj_sense = -1.0;
+#endif
         } else if ( cbc_handle . direction == DIRECTION_MIN ) {
         	obj_sense = 1.0;
         } else {
@@ -1216,7 +1212,7 @@ int CbcMathProgramInstance::cbc_load_SOS( _LONG_T *int_param )
     sos_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( sos_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for loading SOS info\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -1233,7 +1229,7 @@ int CbcMathProgramInstance::cbc_load_SOS( _LONG_T *int_param )
         m_mp->FreeMemory( sos_area );
         return 1;
     }
-
+	
 #ifdef DEBUG
     cbc_print_retrieved_SOS( nsos, sosctype, soslen, sosprior, sosind, sosref );
 #endif
@@ -1320,7 +1316,7 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
     
     cbc_handle . nrows = int_param[ IPARAM_ROWS ];
     cbc_handle . ncols = int_param[ IPARAM_COLS ];
-             
+    
     nrows = cbc_handle . nrows;
     ncols = cbc_handle . ncols;
     nelem = cbc_handle . nonzeros;
@@ -1344,7 +1340,7 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for loading model\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -1452,6 +1448,10 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
         		lb[i] = -CBC_INF;
         	}
         }
+        
+#if CBC_VERSION_NO >= 280
+       	obj_coef[i] *= cbc_handle . obj_multiplier;
+#endif
     }
 
 	// Determine row sense. RHS is placed in row_up and range in row_lo.
@@ -1516,7 +1516,7 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
         col_bas = (int *) m_mp->AllocateMemory( ncols * sizeof( int ) );
         if ( col_bas == NULL ) {
             sprintf( cbc_msg, "Not enough memory for setting basis\n"
-                     "Required amount of memory: %ld bytes",
+                     "Required amount of memory: %d bytes",
                      (ncols + nrows) * sizeof( int ) );
             cbc_error( cbc_msg );
             m_mp->FreeMemory( model_area );
@@ -1526,7 +1526,7 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
         row_bas = (int *) m_mp->AllocateMemory( nrows * sizeof( int ) );
         if ( row_bas == NULL ) {
             sprintf( cbc_msg, "Not enough memory for setting basis\n"
-                     "Required amount of memory: %ld bytes", 
+                     "Required amount of memory: %d bytes", 
                      (ncols + nrows) * sizeof( int ) );
             cbc_error( cbc_msg );
             m_mp->FreeMemory( col_bas );
@@ -1582,7 +1582,7 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
         
         objval = 0.0;
         for ( i=0; i<ncols; i++ ) {
-            objval += obj_coef[i] * col_lev[i];
+            objval += obj_coef[i] * col_lev[i] * cbc_handle . obj_multiplier;
         }
         
         // Solution is not saved if it is not feasible (because check is true).
@@ -1624,7 +1624,7 @@ int CbcMathProgramInstance::cbc_update_model( void )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for loading model\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -1702,7 +1702,7 @@ int CbcMathProgramInstance::cbc_update_model( void )
         
         // Pass objective coefficient updates to CBC.
         
-        clp_solver->setObjCoeff( cols[i], obj_coef[i] );
+        clp_solver->setObjCoeff( cols[i], obj_coef[i] * cbc_handle . obj_multiplier );
     }
     
     // Get row data from AIMMS.
@@ -1787,7 +1787,7 @@ int CbcMathProgramInstance::cbc_mm_load_deleted_rows( _LONG_T *int_param )
     rows = (int *) m_mp->AllocateMemory( mem_size );
     if ( rows == NULL ) {
         sprintf( cbc_msg, "Not enough memory for deleting rows\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -1827,7 +1827,7 @@ int CbcMathProgramInstance::cbc_mm_load_new_rows( void )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for adding rows\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -1893,7 +1893,7 @@ int CbcMathProgramInstance::cbc_mm_load_changed_row_bounds( void )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for updating rows\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -1970,7 +1970,7 @@ int CbcMathProgramInstance::cbc_mm_load_deleted_columns( _LONG_T *int_param )
     cols = (int *) m_mp->AllocateMemory( mem_size );
     if ( cols == NULL ) {
         sprintf( cbc_msg, "Not enough memory for deleting columns\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -2010,7 +2010,7 @@ int CbcMathProgramInstance::cbc_mm_load_new_columns( int model_type_changed )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for adding columns\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -2091,7 +2091,7 @@ int CbcMathProgramInstance::cbc_mm_load_changed_column( int model_type_changed )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for updating columns\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -2177,7 +2177,7 @@ int CbcMathProgramInstance::cbc_mm_load_changed_obj_coef( void )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for updating columns\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -2201,7 +2201,7 @@ int CbcMathProgramInstance::cbc_mm_load_changed_obj_coef( void )
             }
 
             if ( cbc_opt_tracing ) {
-                 fprintf( cbc_logfile, "Changing obj coef of col %ld to %.16E\n",
+                 fprintf( cbc_logfile, "Changing obj coef of col %d to %.16E\n",
                           cols[i], obj_coef[i] );
             }
         }
@@ -2210,7 +2210,7 @@ int CbcMathProgramInstance::cbc_mm_load_changed_obj_coef( void )
         // Input column updates into CBC.
         
         for ( i=0; i<ncols_upd; i++ ) {
-        	clp_solver->setObjCoeff( cols[i], obj_coef[i] );
+        	clp_solver->setObjCoeff( cols[i], obj_coef[i] * cbc_handle . obj_multiplier );
         }
     }
     
@@ -2236,7 +2236,7 @@ int CbcMathProgramInstance::cbc_mm_load_changed_matrix_elements( void )
     model_area = (double *) m_mp->AllocateMemory( mem_size );
     if ( model_area == NULL ) {
         sprintf( cbc_msg, "Not enough memory for updating matrix elements\n"
-                 "Required amount of memory: %ld bytes", mem_size );
+                 "Required amount of memory: %d bytes", mem_size );
         cbc_error( cbc_msg );
         return 1;
     }
@@ -2262,7 +2262,7 @@ int CbcMathProgramInstance::cbc_mm_load_changed_matrix_elements( void )
             }
 
             if ( cbc_opt_tracing ) {
-                 fprintf( cbc_logfile, "Changing matrix element (%ld,%ld) to %.16E\n",
+                 fprintf( cbc_logfile, "Changing matrix element (%d,%d) to %.16E\n",
                           rows[i], cols[i], coef[i] );
             }
         }
@@ -2304,7 +2304,7 @@ int CbcMathProgramInstance::cbc_mm_change_model_direction( _LONG_T *int_param )
             model_area = (double *) m_mp->AllocateMemory( mem_size );
             if ( model_area == NULL ) {
                 sprintf( cbc_msg, "Not enough memory for updating columns\n"
-                         "Required amount of memory: %ld bytes", mem_size );
+                         "Required amount of memory: %d bytes", mem_size );
                 cbc_error( cbc_msg );
                 return 1;
             }
@@ -2329,11 +2329,25 @@ int CbcMathProgramInstance::cbc_mm_change_model_direction( _LONG_T *int_param )
          
             for ( i=0; i<ncols; i++ ) {
                 if ( obj_coef[i] < -EPS_REP || obj_coef[i] > EPS_REP ) {
-                    clp_solver->setObjCoeff( i, obj_coef[i] );
+                    clp_solver->setObjCoeff( i, obj_coef[i] * cbc_handle . obj_multiplier );
                 }
             }
             
             m_mp->FreeMemory( model_area );
+#if CBC_VERSION_NO >= 280
+        } else if ( ( cbc_handle . model_type == CBC_MIP_MODEL                  ) &&
+                    ( ! ( int_param[ IPARAM_MM_FLAGS ] & AOSI_MM_RELOAD_MODEL ) ) &&
+                    ( cbc_handle . prev_direction != cbc_handle . direction     ) ) {
+        	obj_coeffs = clp_solver->getObjCoefficients();
+        	
+        	if ( obj_coeffs ) {
+        		for ( i=0; i<ncols; i++ ) {
+        	        if ( obj_coeffs[i] < -EPS_REP || obj_coeffs[i] > EPS_REP ) {
+        	            clp_solver->setObjCoeff( i, - obj_coeffs[i] );
+        	    	}
+        	    }
+        	}
+#endif
         }
     } else if ( ! ( int_param[ IPARAM_MM_FLAGS ] & AOSI_MM_DIRECTION_WAS_NONE ) ) {
         // Change direction to none. We change all objective coefficients unequal
@@ -2360,12 +2374,8 @@ int CbcMathProgramInstance::cbc_mm_change_model_type( int mm_type )
     int   i, ncols, flag;
     
     ncols = cbc_handle . ncols;
-
-#ifdef _AIMMS390_
-    if ( mm_type == MM_TYPE_MIP ) {              // MIP
-#else
+    
 	if ( mm_type == AOSI_MM_TYPE_MIP ) {         // MIP
-#endif
         cbc_handle . model_type = CBC_MIP_MODEL;
         
         // Make all integer variables integer in CBC. Because model was RMIP
@@ -2379,11 +2389,8 @@ int CbcMathProgramInstance::cbc_mm_change_model_type( int mm_type )
             }
         }
     } else {                                     // RMIP
-#ifdef _AIMMS390_
-		assert( mm_type == MM_TYPE_RMIP );
-#else
         assert( mm_type == AOSI_MM_TYPE_RMIP );
-#endif
+        
         cbc_handle . model_type = CBC_RMIP_MODEL;
         
         // RMIP: Make all integer variables continuous in CBC. 
@@ -2416,13 +2423,8 @@ int CbcMathProgramInstance::cbc_update_mm_model( _LONG_T *int_param )
     // Change model type (MIP/RMIP).
     
     if ( int_param[ IPARAM_MM_FLAGS ] & AOSI_MM_TYPE_CHANGED ) {
-#ifdef _AIMMS390_
-        if ( int_param[ IPARAM_MM_TYPE ] != MM_TYPE_MIP  &&
-             int_param[ IPARAM_MM_TYPE ] != MM_TYPE_RMIP ) {
-#else
 		if ( int_param[ IPARAM_MM_TYPE ] != AOSI_MM_TYPE_MIP  &&
              int_param[ IPARAM_MM_TYPE ] != AOSI_MM_TYPE_RMIP ) {
-#endif
             cbc_error( "Encountered invalid model type change" );
             return 1;
         }
@@ -2525,6 +2527,9 @@ void CbcMathProgramInstance::cbc_init_solve( _LONG_T *int_param, double *dbl_par
     cbc_handle . nrows_upd       = int_param[ IPARAM_UPD_R      ];
     cbc_handle . ncols_upd       = int_param[ IPARAM_UPD_C      ];
     cbc_handle . nonzeros_upd    = int_param[ IPARAM_UPD_NZ     ];
+#if CBC_VERSION_NO >= 280
+    cbc_handle . prev_direction  = cbc_handle . direction;
+#endif
     cbc_handle . direction       = int_param[ IPARAM_DIRECTION  ];
     cbc_handle . obj_col_no      = int_param[ IPARAM_OBJ_COL_NO ];
     
@@ -2543,6 +2548,7 @@ void CbcMathProgramInstance::cbc_init_solve( _LONG_T *int_param, double *dbl_par
                                    AIMMS_INF : -AIMMS_INF;
     cbc_handle . obj_best        = cbc_handle . objval;
     cbc_handle . mip_best_poss   = cbc_handle . objval;
+    cbc_handle . obj_multiplier  = 1.0;
     cbc_handle . iter            = 0;
     cbc_handle . nodes           = 0;
     cbc_handle . nodes_left      = 0;
@@ -2622,7 +2628,7 @@ double CbcMathProgramInstance::cbc_calculate_objective( void )
 	
 	obj = 0.0;
 	for ( i=0; i<ncols; i++ ) {
-		obj += obj_coef[i] * values[i];
+		obj += obj_coef[i] * values[i] * cbc_handle . obj_multiplier;
 	}
 	
     return obj;
@@ -2639,7 +2645,7 @@ int CbcMathProgramInstance::cbc_get_solution_info_lp( void )
 	
     // Get solution information (objective, solver status, etc).
     
-    cbc_handle . objval = solver->getObjValue();
+    cbc_handle . objval = cbc_handle . obj_multiplier * solver->getObjValue();
     cbc_handle . nodes  = 0;
     
     // Getting number of iterations using getIterationCount() does not work if
@@ -2711,8 +2717,8 @@ int CbcMathProgramInstance::cbc_get_solution_info_lp( void )
 #ifdef DEBUG
     if ( cbc_opt_tracing ) {
     	fprintf( cbc_logfile, "Solve number    : %d\n",  cbc_solve_no                );
-        fprintf( cbc_logfile, "Model status    : %ld\n",  cbc_handle . model_status  );
-        fprintf( cbc_logfile, "Solver status   : %ld\n",  cbc_handle . solver_status );
+        fprintf( cbc_logfile, "Model status    : %d\n",  cbc_handle . model_status  );
+        fprintf( cbc_logfile, "Solver status   : %d\n",  cbc_handle . solver_status );
         fprintf( cbc_logfile, "Objective value : %.5f\n", cbc_handle . objval        );
         fprintf( cbc_logfile, "# Iterations    : %d\n",   cbc_handle . iter          );
         fprintf( cbc_logfile, "# Nodes         : %d\n",   cbc_handle . nodes         );
@@ -2752,7 +2758,7 @@ int CbcMathProgramInstance::cbc_get_solution_info_mip( void )
     }
     cbc_handle . iter          = cbc_model->getIterationCount();
     cbc_handle . nodes         = cbc_model->getNodeCount();
-    cbc_handle . mip_best_poss = cbc_model->getBestPossibleObjValue();
+    cbc_handle . mip_best_poss = cbc_handle . obj_multiplier * cbc_model->getBestPossibleObjValue();
     
     user_interupt  = cbc_user_interrupt;
     iter_interupt  = ( cbc_handle . iter >= cbc_opt_iter_limit );
@@ -2832,8 +2838,8 @@ int CbcMathProgramInstance::cbc_get_solution_info_mip( void )
 #ifdef DEBUG
     if ( cbc_opt_tracing ) {
     	fprintf( cbc_logfile, "Solve number    : %d\n",   cbc_solve_no               );
-        fprintf( cbc_logfile, "Model status    : %ld\n",  cbc_handle . model_status  );
-        fprintf( cbc_logfile, "Solver status   : %ld\n",  cbc_handle . solver_status );
+        fprintf( cbc_logfile, "Model status    : %d\n",  cbc_handle . model_status  );
+        fprintf( cbc_logfile, "Solver status   : %d\n",  cbc_handle . solver_status );
         fprintf( cbc_logfile, "Objective value : %.5f   (CBC: %.5f)\n",
                  cbc_handle . objval, cbc_model->getObjValue() );
         fprintf( cbc_logfile, "# Iterations    : %d\n",   cbc_handle . iter          );
@@ -2849,14 +2855,15 @@ int CbcMathProgramInstance::cbc_get_solution_info_mip( void )
 // The function cbc_actually_call_solver()
 int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& opt_list )
 {
-	char       dir[MAX_DIR_LEN], file_name[1024], buf[256];
-    _LONG_T    len;
-    int        i, opt_list_length, res = 0;
+	char                  dir[MAX_DIR_LEN], file_name[1024], buf[256];
+    _LONG_T               len;
+    int                   i, opt_list_length, res = 0;
 #ifdef WIN32
-    FILE      *sta_file = NULL;
+	CoinMessageHandler   *handler = NULL;
+    FILE                 *sta_file = NULL;
 #else // LINUX
-    int        fd = -1;
-    bool       redirect_stdout = false;
+    int                   fd = -1;
+    bool                  redirect_stdout = false;
 #endif
     
     assert( cbc_args );
@@ -2865,22 +2872,18 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
 	
 	if ( cbc_opt_status_file == 1 ) {
 		len = MAX_DIR_LEN;
-#ifdef _AIMMS390_
-		m_si_spec->GetLogDirName( dir, &len );
-#else
         m_gen->GetLogDirName( dir, &len );
-#endif
         
 #ifdef WIN32
         if ( len >= 0 ) {
-            sprintf( file_name, "%s/%s", dir, CBC_STATUS_FILE_NAME );
+            sprintf( file_name, "%s/%s", dir, CBC_STATUS_FILE_NAME_ASC );
     
             sta_file = fopen( file_name, "a" );
             
     		if ( sta_file ) {
-    			CoinMessageHandler handler( sta_file );
+    			handler = new CoinMessageHandler( sta_file );
     			
-    			cbc_model->passInMessageHandler( &handler );
+    			cbc_model->passInMessageHandler( handler );
     			
 #ifdef DEBUG
 				OsiSolverInterface * solver = cbc_model->solver();
@@ -2892,7 +2895,7 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
     	}
 #else // LINUX
 		if ( len >= 0 ) {
-			sprintf( file_name, "%s/%s", dir, CBC_STATUS_FILE_NAME );
+			sprintf( file_name, "%s/%s", dir, CBC_STATUS_FILE_NAME_ASC );
 			
 			fd = dup( fileno(stdout) );
 			freopen( file_name, "a", stdout );
@@ -2947,6 +2950,10 @@ int CbcMathProgramInstance::cbc_actually_call_solver( std::list<std::string>& op
 	if ( sta_file ) {
 		fclose( sta_file );
 	}
+	
+	if ( handler ) {
+		delete handler;
+	}
 #else // LINUX
 	if ( redirect_stdout ) {
 		fflush( stdout );
@@ -2967,7 +2974,15 @@ int CbcMathProgramInstance::cbc_solve_model( std::list<std::string>& opt_list )
     // Set optimization direction.
     
     if ( cbc_handle . direction == DIRECTION_MAX ) {
+#if CBC_VERSION_NO >= 280
+    	if ( cbc_handle . obj_multiplier < 0.0 ) {
+        	cbc_model->setObjSense( CBC_OBJECTIVE_SENSE_MINIMIZE );
+        } else {
+        	cbc_model->setObjSense( CBC_OBJECTIVE_SENSE_MAXIMIZE );
+        }
+#else
         cbc_model->setObjSense( CBC_OBJECTIVE_SENSE_MAXIMIZE );
+#endif
     } else if ( cbc_handle . direction == DIRECTION_MIN ) {
     	cbc_model->setObjSense( CBC_OBJECTIVE_SENSE_MINIMIZE );
     } else {
@@ -3026,6 +3041,17 @@ int CbcMathProgramInstance::cbc_call_solver( _LONG_T *int_param, double *dbl_par
     
     res = cbc_get_model_type( int_param );
     if ( res ) return 1;
+    
+    // CBC 2.8.0 contains a bug when solving maximization problems. Therefore
+    // we transform the problem into a mimization problem but we want to report
+    // objective values (etc) as if it was a maximization problem.
+	
+#if CBC_VERSION_NO >= 280
+    if ( ( cbc_handle . direction == DIRECTION_MAX  ) &&
+         ( cbc_handle . model_type == CBC_MIP_MODEL ) ) {
+    	cbc_handle . obj_multiplier = -1.0;
+    }
+#endif
     
     // Get model data from AIMMS and pass it to the solver.
     
@@ -3290,7 +3316,7 @@ void CbcSolverInfo::GetHelpFile(
     char    *filename,         // filename must be of length < 512
     _LONG_T  size )            // size of the buffer including '\0'
 {
-	strncpy( filename, "aimmscbc.chm", size );
+	strncpy( filename, CBC_HELP_FILE_NAME, size );
 	filename[ size - 1 ] = '\0';
 }
 
@@ -3302,14 +3328,10 @@ _LONG_T CbcSolverInfo::GetLogFile( _TCHAR *file_name )
     _LONG_T   len;
     
     len = MAX_DIR_LEN;
-#ifdef _AIMMS390_
-	m_si_spec->GetLogDirNameWchar( dir, &len );
-#else
     m_gen->GetLogDirNameWchar( dir, &len );
-#endif
     assert( len != -1 );
     
-    SPRINTF( file_name, _T("%s/%s"), dir, _T(CBC_STATUS_FILE_NAME) );
+    SPRINTF( file_name, _T("%s/%s"), dir, CBC_STATUS_FILE_NAME_UNI );
         
     return AOSI_SUCCESS;
 }
@@ -3381,7 +3403,7 @@ void CbcMathProgramInstance::DoSolve(
     int   res;
 	
 	// Initialize the solver options.
-
+	
 	if ( ! cbc_mp_init ) {
 		cbc_init_options();
     	
@@ -3487,13 +3509,11 @@ void CbcMathProgramInstance::DoSolve(
     int_stat[ AOSI_ISTAT_MEM_USED       ] = cbc_get_memory_used();
     int_stat[ AOSI_ISTAT_RESTART_OFF    ] = 0;
     
-#ifndef _AIMMS390_
     // Current settings of postsolve options for CBC.
     
     int_stat[ AOSI_ISTAT_POSTSOLVE_CONT ] = cbc_int_opt_val[CBC_OPT_POSTSOLVE_CONT];
     int_stat[ AOSI_ISTAT_POSTSOLVE_INT  ] = cbc_int_opt_val[CBC_OPT_POSTSOLVE_INT];
     int_stat[ AOSI_ISTAT_MIP_CALC_SENS  ] = cbc_int_opt_val[CBC_OPT_MIP_CALCULATE_BASIS_AND_MARG];
-#endif
     
     // Like most solvers, CBC does not take care of the constant in the AIMMS
     // objective function. Value AOSI_DSTAT_OBJ is handled by AIMMS but value
@@ -3513,7 +3533,7 @@ void CbcMathProgramInstance::DoSolve(
 #ifdef _WIN64
         sprintf( cbc_msg, "Memory in use by CBC %s: %I64d bytes.",
 #else
-        sprintf( cbc_msg, "Memory in use by CBC %s: %ld bytes.",
+        sprintf( cbc_msg, "Memory in use by CBC %s: %d bytes.",
 #endif
                  CBC_VERSION, int_stat[ AOSI_ISTAT_MEM_USED ] );
         m_gen->PassMessage( AOSI_PRIO_REMARK, cbc_msg );
@@ -3569,7 +3589,7 @@ void CbcMathProgramInstance::cbc_get_col_sol_during_callback( _LONG_T first_col,
     	        len = sizeof( colname );
     	        m_mp->GetRowColumnName( AOSI_NAME_COLUMN, i, colname, &len );
     	
-    	        fprintf( cbc_logfile, "colno %ld ", first_col + i );
+    	        fprintf( cbc_logfile, "colno %d ", first_col + i );
     	        fprintf( cbc_logfile, "lev %.16E ", lev[i] );
     	        fprintf( cbc_logfile, "   (%s)\n", colname );
     	    }
@@ -3705,13 +3725,13 @@ void CbcMathProgramInstance::GetColumnSolution(
             len = sizeof( colname );
             m_mp->GetRowColumnName( AOSI_NAME_COLUMN, i, colname, &len );
 
-            fprintf( cbc_logfile, "colno %ld ", first_col + i );
+            fprintf( cbc_logfile, "colno %d ", first_col + i );
             if ( level )
                 fprintf( cbc_logfile, "lev %.16E ", lev[i] );
             if ( marginals )
                 fprintf( cbc_logfile, "mar %.16E ", mar[i] );
             if ( base )
-                fprintf( cbc_logfile, "col_bas %ld", col_bas[i+first_col] );
+                fprintf( cbc_logfile, "col_bas %d", col_bas[i+first_col] );
             fprintf( cbc_logfile, "   (%s)\n", colname );
         }
         
@@ -3832,13 +3852,13 @@ void CbcMathProgramInstance::GetRowSolution(
             len = sizeof( rowname );
             m_mp->GetRowColumnName( AOSI_NAME_ROW, i, rowname, &len );        
 
-            fprintf( cbc_logfile, "rowno %ld ", first_row + i );
+            fprintf( cbc_logfile, "rowno %d ", first_row + i );
             if ( level )
                 fprintf( cbc_logfile, "lev %.16E ", lev[i] );
             if ( marginals )
                 fprintf( cbc_logfile, "mar %.16E ", mar[i] );
             if ( base )
-                fprintf( cbc_logfile, "row_bas %ld", row_bas[i+first_row] );
+                fprintf( cbc_logfile, "row_bas %d", row_bas[i+first_row] );
             fprintf( cbc_logfile, "   (%s)\n", rowname );
         }
         
@@ -4006,6 +4026,8 @@ int CbcMathProgramInstance::cbc_solve_mps( _LONG_T int_param[], double dbl_param
     cbc_handle . basis    = 0;
     cbc_handle . cb_flags = 0;
     
+    // It seems that CBC always solves a mps file as a minimization problem.
+    
     res = cbc_load_mps_file( filename );
     if ( res ) return 1;
     
@@ -4162,7 +4184,7 @@ void CbcMathProgramInstance::DoMpsSolve(
 #ifdef _WIN64
     sprintf( cbc_msg, "Memory in use by CBC %s: %I64d bytes.",
 #else
-    sprintf( cbc_msg, "Memory in use by CBC %s: %ld bytes.",
+    sprintf( cbc_msg, "Memory in use by CBC %s: %d bytes.",
 #endif
              CBC_VERSION, int_stat[ AOSI_ISTAT_MEM_USED ] );
     m_gen->PassMessage( AOSI_PRIO_REMARK, cbc_msg );

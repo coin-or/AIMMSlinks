@@ -16,13 +16,8 @@
 class CbcSolverInfo : public ISolverInfo
 {
 public:
-#ifdef _AIMMS390_
-	CbcSolverInfo(IAimmsSolverConnection *gen) : m_gen(gen)
-	          , m_si_spec(gen->GetExtendedConnection()), cbc_options_ordered(false) {}
-#else
 	CbcSolverInfo(IAimmsSolverConnection *gen) : m_gen(gen)
 	          , cbc_options_ordered(false) {}
-#endif
 protected:
 	virtual ~CbcSolverInfo() {}
 public:
@@ -69,9 +64,6 @@ public:
         virtual void Delete(void);
 private:
 	IAimmsSolverConnection   *m_gen;
-#ifdef _AIMMS390_
-	IAimmsExtendedSolverConnection   *m_si_spec;
-#endif
 	
 	bool cbc_options_ordered;          // If 1, options have been ordered
 	
@@ -82,12 +74,7 @@ private:
 class CbcMathProgramInstance : public ISolverMathProgramInstance
 {
 public:
-#ifdef _AIMMS390_
-	CbcMathProgramInstance(class IAimmsMathProgramInfo *mp, IAimmsSolverConnection *gen,
-	                       IAimmsExtendedSolverConnection *si_spec);
-#else
 	CbcMathProgramInstance(class IAimmsMathProgramInfo *mp, IAimmsSolverConnection *gen);
-#endif
 
 protected:	
 	virtual ~CbcMathProgramInstance() {}
@@ -167,9 +154,6 @@ private:
 	IAimmsMathProgramInfo                     *m_mp;
 	IAimmsMathProgramMatrixManipulationInfo   *m_manipulation;
 	IAimmsMathProgramCallback                 *m_callback;
-#ifdef _AIMMS390_
-	IAimmsExtendedSolverConnection            *m_si_spec;
-#endif
 	
 	cbc_handle_struct    	cbc_handle;           // Handle
 	
