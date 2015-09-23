@@ -49,7 +49,7 @@ After obtaining the CBC source code the directory structure of the CbcAimms dire
 
 Open the solution file Cbc.sln in the CbcAimms\coin-Cbc\Cbc\MSVisualStudio\v10 directory using using Microsoft
 Visual Studio Interactive Development Environment (IDE) version 10 or higher, and build the following CBC components:
-cbcSolve, libCbc, libCgl, libClp, libCoinUtils, libOsi, libOsiClp. Note: if you build component cbcSolve then
+cbc, libCbc, libCgl, libClp, libCoinUtils, libOsi, libOsiClp. Note: if you build component cbc then
 automatically all other components are build.
 
 
