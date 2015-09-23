@@ -19,21 +19,14 @@ For installation of an AIMMS system, see the file INSTALL in the AIMMSlinks dire
 
 Obtain the CBC source code via subversion inside the CbcAimms directory by using, e.g., 
 
-   svn co https://projects.coin-or.org/svn/Cbc/stable/2.4 coin-Cbc
+   svn co https://projects.coin-or.org/svn/Cbc/stable/2.9 coin-Cbc
 
 Alternatively one can obtain the source code from the directory,
 
    http://www.coin-or.org/download/source/Cbc/
 
-and downloading a file of the form Cbc-X.Y.Z.zip, e.g., Cbc-2.3.2.zip. Unzip this file to
+and downloading a file of the form Cbc-X.Y.Z.zip, e.g., Cbc-2.9.4.zip. Unzip this file to
 a directory coin-Cbc inside the CbcAimms directory.
-
-NOTE:
-It is recommended to use CBC 2.4 (MSVC v8 or v9) or CBC 2.2 (MSVC v8). The MSVC v8 project file
-for CBC 2.3 contains some errors and therefore it is recommended to use the MSVC v9 project file
-for CBC 2.3. When opening the MSVC v9 project file for CBC 2.3 you might get an error message
-saying that the project file ‘..\Vol\MSVisualStudio\v9\libVol\libVol\vcproj’ could not be loaded,
-but this error message can be ignored since libVol is not needed.
 
 (For installation instructions for CBC see also https://projects.coin-or.org/Cbc.)
 
@@ -50,32 +43,20 @@ After obtaining the CBC source code the directory structure of the CbcAimms dire
        - doxydoc
        - Osi
        - ThirdParty
-       - Vol
      - MSVisualStudio
-       - v8
+       - v10
      - src
 
-Open the solution file Cbc.sln in the CbcAimms\coin-Cbc\Cbc\MSVisualStudio\v8 directory using using Microsoft
-Visual Studio Interactive Development Environment (IDE) version 8 or higher, and build the following CBC components:
+Open the solution file Cbc.sln in the CbcAimms\coin-Cbc\Cbc\MSVisualStudio\v10 directory using using Microsoft
+Visual Studio Interactive Development Environment (IDE) version 10 or higher, and build the following CBC components:
 cbcSolve, libCbc, libCgl, libClp, libCoinUtils, libOsi, libOsiClp. Note: if you build component cbcSolve then
 automatically all other components are build.
-
-To build CBC for Windows 64 bits requires some extra work because it is not available in the configuration manager
-of the solution file Cbc.sln. But using the following steps it is fairly easy to build CBC for Windows 64 bits.
-After opening Cbc.sln do:
-- From menu select: Build - Configuration Manager
-- In 'Active solution platform' dialog select: <New...>
-- In 'Type or select the new platform' dialog select: x64, and click OK.
 
 
 == 2. Build the AIMMS-CBC dll ==
 
-Build the code using Microsoft Visual Studio Interactive Development Environment (IDE) version 8 or higher by
-opening the project file libAimmsCbc.vcproj inside the CbcAimms\MSVisualStudio\v8 directory.
-
-The AIMMS-CBC dll built by default is for an AIMMS ASCII version. To build a dll for AIMMS Unicode, change
-the value of 'Character Set' inside the project file (in Configuration Properties - General) into
-'Use Unicode Character Set'.
+Build the code using Microsoft Visual Studio Interactive Development Environment (IDE) version 10 or higher by
+opening the project file libAimmsCbc.vcproj inside the CbcAimms\MSVisualStudio\v10 directory.
 
 
 == 3. Add CBC to AIMMS ==
