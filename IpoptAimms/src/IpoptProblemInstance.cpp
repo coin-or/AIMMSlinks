@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -10,9 +10,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 // Includes necessary IPOPT header files
-#include "libIpopt.h"
+#include <stdio.h>
 #include <string.h>
 
+#include "libIpopt.h"
+#include <string.h>
+#include <assert.h>
 
 //@< The function |IpoptProblemInstance::Constructor()| @> @;
 //@< The function |IpoptProblemInstance::Destructor()| @> @;
@@ -105,6 +108,10 @@ IpoptProblemInstance::IpoptProblemInstance( IpoptMathProgramInstance *impi )
 	// Initialize the progress iteration counter.
 	
 	ProgressIterationCount = 0;
+	
+	// Initialize the next progress time moment.
+	
+	m_impi->ipopt_next_to_print_time = m_impi->get_mp()->GetTime();
 }
 
 
@@ -490,6 +497,8 @@ bool IpoptProblemInstance::intermediate_callback( AlgorithmMode mode, Index iter
 	  											  Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials,
 												  const IpoptData* ip_data, IpoptCalculatedQuantities* ip_cq )
 {
+	bool   do_progress = false;
+	
     // If this is the first iteration, reset the progress iteration counter to zero.
     if ( iter == 0 ) {
 		ProgressIterationCount = 0;
@@ -504,8 +513,22 @@ bool IpoptProblemInstance::intermediate_callback( AlgorithmMode mode, Index iter
 	// See if it's time to report progress back to AIMMS.
 	if ( ProgressIterationCount == m_impi->ipopt_opt_sol_progress ) {
 		// Reset the counter, and report the current iteration data.
-		ProgressIterationCount     = 0;
+		ProgressIterationCount = 0;
 		
+		do_progress = true;
+	}
+	
+	if ( m_impi->ipopt_opt_progress_interval ) {
+		int cur_time = m_impi->get_mp()->GetTime();
+		
+		if ( cur_time > m_impi->ipopt_next_to_print_time ) {
+			do_progress = true;
+			
+			m_impi->ipopt_next_to_print_time = cur_time + m_impi->ipopt_opt_progress_interval;
+		}
+	}
+	
+	if ( do_progress ) {
 		// Update the sum of the primal infeasibilities.
 		IPOPT_current->sum_inf     = inf_pr;
 		

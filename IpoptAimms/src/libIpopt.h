@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -27,7 +27,9 @@
 
 // Some IPOPT-related constants.
 
-#define IPOPT_STATUS_FILE_NAME    "ipopt.sta"
+#define IPOPT_STATUS_FILE_NAME_ASC    "ipopt.sta"
+#define IPOPT_STATUS_FILE_NAME_UNI    _T("ipopt.sta")
+
 
 #define IPOPT_INF                 1.0e19      // The default upper bound for IPOPT.  In the future this could be 
 											  // connected to the IPOPT option nlp_upper_bound_inf
@@ -121,7 +123,7 @@ typedef struct IPOPT_handle_record
 #define SPRINTF _stprintf
 #define STRICMP _stricmp
 #else // WIN32
-#define SPRINTF sprintf
+#define SPRINTF _stprintf
 #define STRICMP strcasecmp
 #endif // WIN32
 

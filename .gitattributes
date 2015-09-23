@@ -16,8 +16,8 @@ CbcAimms/src/cbc_options.h -text
 /INSTALL -text
 IpoptAimms/AUTHORS -text
 IpoptAimms/INSTALL -text
-IpoptAimms/MSVisualStudio/v8/libAimmsIpopt.sln -text
-IpoptAimms/MSVisualStudio/v8/libAimmsIpopt.vcproj -text
+IpoptAimms/MSVisualStudio/v10/libAimmsIpopt.sln -text
+IpoptAimms/MSVisualStudio/v10/libAimmsIpopt.vcxproj -text
 IpoptAimms/src/AimmsIpoptConfig.h -text
 IpoptAimms/src/AimmsIpoptOptions.cpp -text
 IpoptAimms/src/AimmsIpoptOptions.h -text

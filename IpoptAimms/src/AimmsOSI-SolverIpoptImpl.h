@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -170,6 +170,11 @@ private:
 public:
 	_LONG_T ipopt_opt_sol_progress;			         // Solution progress passed to AIMMS every n number
 	                                                 // of iterations with n the value of this option
+	_LONG_T ipopt_opt_progress_interval;			 // Time (in 1/100th of a second) after which a progress
+                                                     // report should be sent to AIMMS. If its value is 0,
+                                                     // no progress additional reports are made
+	_LONG_T ipopt_next_to_print_time;                // Next time (in 1/100th of a second) for which
+	                                                 // a progress should be printed
 	_LONG_T ipopt_opt_dom_limit;					 // Maximum number of domain errors
 private:
 	_LONG_T ipopt_opt_priority;                      // Minimum priority of message passed through to AIMMS

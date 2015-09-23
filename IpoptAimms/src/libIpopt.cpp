@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -16,8 +16,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "libIpopt.h"						// Ipopt Interface header file
-
+#include "libIpopt.h"
+#include <string.h>							// Ipopt Interface header file
+#include <assert.h>
 
 //@< The function |GetSolverInfo()| @> @;
 //@< The function |IpoptMathProgramInstance()| @> @;
@@ -190,11 +191,24 @@ int IpoptSolverInfo::RegisterAsSolver( char* name, _LONG_T* model_flags )
     // We are not interested in the sub-sub version number but only the sub version
     // number (e.g., 3.9 instead of 3.9.1).
     
-    char version[16];
+    char   *str, version[16];
     
     sprintf( version, "%s\0", IPOPT_VERSION );
     
-    char *str = strstr( version, "3.9" );
+    str = strstr( version, "3.9" );
+    if ( str ) {
+    	char *str1 = strstr( version, "." );
+    	if ( str1 ) {
+    		if ( strlen(str1) >= 2 ) {
+    			char *str2 = strstr( &str1[1], "." );
+    			if ( str2 ) {
+    				str2[0] = '\0';
+    			}
+    		}
+    	}
+    }
+    
+    str = strstr( version, "3.11" );
     if ( str ) {
     	char *str1 = strstr( version, "." );
     	if ( str1 ) {
@@ -349,7 +363,7 @@ void IpoptSolverInfo::GetHelpFile(
 _LONG_T IpoptSolverInfo::GetLogFile( _TCHAR *file_name )
 {
 #ifdef _AIMMS390_
-	strcpy( (char *) file_name, IPOPT_STATUS_FILE_NAME );
+	strcpy( (char *) file_name, IPOPT_STATUS_FILE_NAME_ASC );
 #else
 	_TCHAR    dir[MAX_DIR_LEN];
     _LONG_T   len = MAX_DIR_LEN;
@@ -357,7 +371,7 @@ _LONG_T IpoptSolverInfo::GetLogFile( _TCHAR *file_name )
     m_gen->GetLogDirNameWchar( dir, &len );
     assert( len != -1 ); 
     
-    SPRINTF( file_name, _T("%s/%s"), dir, _T(IPOPT_STATUS_FILE_NAME) );
+    SPRINTF( file_name, _T("%s/%s"), dir, IPOPT_STATUS_FILE_NAME_UNI );
 #endif
     
     return AOSI_SUCCESS;
@@ -527,7 +541,7 @@ void IpoptMathProgramInstance::DoSolve(
 #ifdef _WIN64
         sprintf( IPOPT_msg, "Memory in use by IPOPT %s: %I64d bytes.",
 #else
-        sprintf( IPOPT_msg, "Memory in use by IPOPT %s: %ld bytes.",
+        sprintf( IPOPT_msg, "Memory in use by IPOPT %s: %d bytes.",
 #endif
                             IPOPT_VERSION, int_stat[ AOSI_ISTAT_MEM_USED ] );
         m_gen->PassMessage( AOSI_PRIO_REMARK, IPOPT_msg );
@@ -988,7 +1002,7 @@ int IpoptMathProgramInstance::IPOPT_Get_Model( void )
     
     if ( IPOPT_handle.model_area == NULL ) {
         sprintf( IPOPT_msg, "Not enough memory for loading model; amount of memory: "
-                            "%ld bytes\n", mem_size + IPOPT_handle.mem_in_use );
+                            "%d bytes\n", mem_size + IPOPT_handle.mem_in_use );
         IPOPT_Error( IPOPT_msg );
         return 1;
     }
@@ -1026,7 +1040,7 @@ int IpoptMathProgramInstance::IPOPT_Get_Model( void )
     
     if ( IPOPT_handle.solution == NULL ) {
         sprintf( IPOPT_msg, "Not enough memory for loading model; amount of memory: "
-                            "%ld bytes\n", mem_size_sol + IPOPT_handle.mem_in_use );
+                            "%d bytes\n", mem_size_sol + IPOPT_handle.mem_in_use );
         IPOPT_Error( IPOPT_msg );
         return 1;
     }
@@ -1042,7 +1056,7 @@ int IpoptMathProgramInstance::IPOPT_Get_Model( void )
     
     if ( IPOPT_handle.obj_area == NULL ) {
         sprintf( IPOPT_msg, "Not enough memory for loading model; amount of memory: "
-                            "%ld bytes\n", mem_size + IPOPT_handle.mem_in_use );
+                            "%d bytes\n", mem_size + IPOPT_handle.mem_in_use );
         IPOPT_Error( IPOPT_msg );
         return 1;
     }
@@ -1146,7 +1160,7 @@ int IpoptMathProgramInstance::IPOPT_Get_Model( void )
 
     if ( IPOPT_handle.linear_area == NULL ) {
         sprintf( IPOPT_msg, "Not enough memory for loading model; amount of memory: "
-                            "%ld bytes\n", mem_size + IPOPT_handle.mem_in_use );
+                            "%d bytes\n", mem_size + IPOPT_handle.mem_in_use );
         IPOPT_Error( IPOPT_msg );
         return 1;
     }
@@ -1186,7 +1200,7 @@ int IpoptMathProgramInstance::IPOPT_Get_Model( void )
     
     if ( IPOPT_handle.jac_area == NULL ) {
         sprintf( IPOPT_msg, "Not enough memory for loading model; amount of memory: "
-                            "%ld bytes\n", mem_size + IPOPT_handle.mem_in_use );
+                            "%d bytes\n", mem_size + IPOPT_handle.mem_in_use );
         IPOPT_Error( IPOPT_msg );
         return 1;
     }
@@ -1665,37 +1679,37 @@ int IpoptMathProgramInstance::IPOPT_Is_Feasible_Solution( double* x, double* row
 //@< The function |print_parameters()| @> @;
 void IpoptMathProgramInstance::print_parameters( FILE *f, _LONG_T options, _LONG_T *int_param, double *dbl_param )
 {
-    fprintf( f, "Options                                   : %ld\n",
+    fprintf( f, "Options                                   : %d\n",
              options );
     fprintf( f, "Optimization direction                    : %s\n",
              ( int_param[ IPARAM_DIRECTION ] == DIRECTION_MIN ) ? "Minimize" : "Maximize" );
     fprintf( f, "Objective constant                        : %12.5e\n",
              dbl_param[ DPARAM_OBJECTIVE_CONST ] );
-    fprintf( f, "Objective column number                   : %ld\n",
+    fprintf( f, "Objective column number                   : %d\n",
              int_param[ IPARAM_OBJ_COL_NO ] );
-    fprintf( f, "Number of rows                            : %ld\n",
+    fprintf( f, "Number of rows                            : %d\n",
              int_param[ IPARAM_ROWS ] );
-    fprintf( f, "Number of nonlinear rows                  : %ld\n",
+    fprintf( f, "Number of nonlinear rows                  : %d\n",
              int_param[ IPARAM_NL_ROWS ] );
-    fprintf( f, "Number of columns                         : %ld\n",
+    fprintf( f, "Number of columns                         : %d\n",
              int_param[ IPARAM_COLS ] );
-    fprintf( f, "Number of nonlinear columns               : %ld\n",
+    fprintf( f, "Number of nonlinear columns               : %d\n",
              int_param[ IPARAM_NL_COLS ] );
-    fprintf( f, "Number of non-zeros                       : %ld\n",
+    fprintf( f, "Number of non-zeros                       : %d\n",
              int_param[ IPARAM_NONZEROS ] );
-    fprintf( f, "Number of nonlinear non-zeros             : %ld\n",
+    fprintf( f, "Number of nonlinear non-zeros             : %d\n",
              int_param[ IPARAM_NL_NONZEROS ] );
-    fprintf( f, "Number of non-zeros of obj.               : %ld\n",
+    fprintf( f, "Number of non-zeros of obj.               : %d\n",
              int_param[ IPARAM_OBJ_NZ ] );
-    fprintf( f, "Basis provided                            : %ld\n",
+    fprintf( f, "Basis provided                            : %d\n",
              int_param[ IPARAM_BASIS ] );
-    fprintf( f, "Number of equality rows                   : %ld\n",
+    fprintf( f, "Number of equality rows                   : %d\n",
              int_param[ IPARAM_EQUAL_R ] );
-    fprintf( f, "Maximum elements in a row                 : %ld\n",
+    fprintf( f, "Maximum elements in a row                 : %d\n",
              int_param[ IPARAM_MAX_ELEM_R ] );
-    fprintf( f, "Maximum elements in a column              : %ld\n",
+    fprintf( f, "Maximum elements in a column              : %d\n",
              int_param[ IPARAM_MAX_ELEM_C ] );
-    fprintf( f, "Solve number                              : %ld\n",
+    fprintf( f, "Solve number                              : %d\n",
              ipopt_solve_no );
 
     fflush( f );
@@ -1715,7 +1729,7 @@ void IpoptMathProgramInstance::print_columns( int ncols, _LONG_T number, double 
             len = sizeof( colname );
             m_mp->GetRowColumnName( AOSI_NAME_COLUMN, number + i, colname, &len );        
 
-            fprintf( IPOPT_logfile, "colno %ld ",  number + i );
+            fprintf( IPOPT_logfile, "colno %d ",  number + i );
             if ( lb[i] <= -IPOPT_INF ) {
                 fprintf( IPOPT_logfile, "lb %16.8e ",  -1e80 );
             } else {
@@ -1749,8 +1763,8 @@ void IpoptMathProgramInstance::print_objective( int ncols, double *obj_coef, int
             len = sizeof( colname );
             m_mp->GetRowColumnName( AOSI_NAME_COLUMN, i, colname, &len );        
 
-            fprintf( IPOPT_logfile, "colno %ld ",  i );
-            fprintf( IPOPT_logfile, "obj_coeff %16.8e (flag %ld)", obj_coef[i], obj_flag[i] );
+            fprintf( IPOPT_logfile, "colno %d ",  i );
+            fprintf( IPOPT_logfile, "obj_coeff %16.8e (flag %d)", obj_coef[i], obj_flag[i] );
             fprintf( IPOPT_logfile, "   (%s)", colname );
             fputs( "\n", IPOPT_logfile );
         }
@@ -1772,7 +1786,7 @@ void IpoptMathProgramInstance::print_rows( int nrows, _LONG_T number, double *ro
             len = sizeof( rowname );
             m_mp->GetRowColumnName( AOSI_NAME_ROW, number + i, rowname, &len );
             
-            fprintf( IPOPT_logfile, "rowno %ld ",  number + i );
+            fprintf( IPOPT_logfile, "rowno %d ",  number + i );
             if ( row_lb[i] <= -IPOPT_INF ) {
                 fprintf( IPOPT_logfile, "lb %16.8e ",  -1e80 );
             } else {
@@ -1807,7 +1821,7 @@ void IpoptMathProgramInstance::print_elem( int nelem, _LONG_T *cols, _LONG_T *ro
             len = sizeof( rowname );
             m_mp->GetRowColumnName( AOSI_NAME_ROW, rows[i], rowname, &len );        
      
-            fprintf( IPOPT_logfile, "matrix element (%ld,%ld) = %16.8e (flag %ld)",
+            fprintf( IPOPT_logfile, "matrix element (%d,%d) = %16.8e (flag %d)",
                                     rows[i], cols[i], coef[i], nlflag[i] );
             fprintf( IPOPT_logfile, "   (%s, %s)\n", rowname, colname );
         }
@@ -1822,8 +1836,8 @@ void IpoptMathProgramInstance::print_solution_stats()
 {
     if ( ipopt_opt_tracing ) {
         fprintf( IPOPT_logfile, "\n" );
-        fprintf( IPOPT_logfile, "Model status    : %ld\n",  IPOPT_handle . model_status  );
-        fprintf( IPOPT_logfile, "Solver status   : %ld\n",  IPOPT_handle . solver_status );
+        fprintf( IPOPT_logfile, "Model status    : %d\n",  IPOPT_handle . model_status  );
+        fprintf( IPOPT_logfile, "Solver status   : %d\n",  IPOPT_handle . solver_status );
         fprintf( IPOPT_logfile, "Objective value : %.5f\n", IPOPT_handle . obj           );
         fprintf( IPOPT_logfile, "# Iterations    : %d\n",   IPOPT_handle . iter          );
         fprintf( IPOPT_logfile, "\n" );

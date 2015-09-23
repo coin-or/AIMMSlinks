@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -11,10 +11,11 @@
 
 // Includes necessary IPOPT header files
 #include <stdio.h>
+#include <string.h>
 #include "libIpopt.h"
 #include "AimmsIpoptOptions.h"
 #include <string.h>
-
+#include <assert.h>
 
 //@< The function |IPOPT_order_options()| @> @;
 //@< The function |IPOPT_Init_Global_Options()| @> @;
@@ -1478,12 +1479,13 @@ void IpoptMathProgramInstance::IPOPT_Init_Global_Options( void )
 {
 	// Set global option variables equal to their corresponding AIMMS default value.
 	
-	ipopt_opt_sol_progress = 100;
-    ipopt_opt_time_limit   = IPOPT_MAXINT;
-    ipopt_opt_priority     = AOSI_PRIO_ALWAYS;
-    ipopt_opt_dom_limit    = 0;
+	ipopt_opt_sol_progress      = 0;           // AIMMS default
+	ipopt_opt_progress_interval = 200;         // AIMMS default (translated to milli-seconds)
+    ipopt_opt_time_limit        = IPOPT_MAXINT;
+    ipopt_opt_priority          = AOSI_PRIO_ALWAYS;
+    ipopt_opt_dom_limit         = 0;
 #ifdef DEBUG
-    ipopt_opt_tracing      = 0;
+    ipopt_opt_tracing           = 0;
 #endif
 }
 
@@ -1548,6 +1550,12 @@ void IpoptMathProgramInstance::IPOPT_Get_Options( void )
 				// This value represents the number of iterations that must be completed
 			    // before the progress window is updated in AIMMS.
                 ipopt_opt_sol_progress = opt_int[ i ];
+                break;
+              
+              case AOSI_IOPT_progress_interval:
+				// This value represents the number of seconds that must be completed
+			    // before the progress window is updated in AIMMS.
+                ipopt_opt_progress_interval = 100 * opt_int[ i ];
                 break;
 
               case AOSI_IOPT_max_domain_errors:
@@ -1710,7 +1718,7 @@ int IpoptMathProgramInstance::IPOPT_Set_Options( Ipopt::SmartPtr<Ipopt::IpoptApp
 	
 	if ( ipopt_int_opt_val[IPOPT_OPT_STATUS_FILE] ) {
 #ifdef _AIMMS390_
-    	sprintf( file_name, "%s", IPOPT_STATUS_FILE_NAME );
+    	sprintf( file_name, "%s", IPOPT_STATUS_FILE_NAME_ASC );
     	
     	bReturn = app->Options()->SetStringValue( "output_file", file_name );
 		if ( bReturn == false ) {
@@ -1725,7 +1733,7 @@ int IpoptMathProgramInstance::IPOPT_Set_Options( Ipopt::SmartPtr<Ipopt::IpoptApp
         m_gen->GetLogDirName( dir, &len );
     	    
     	if ( len >= 0 ) {
-    	    sprintf( file_name, "%s/%s", dir, IPOPT_STATUS_FILE_NAME );
+    	    sprintf( file_name, "%s/%s", dir, IPOPT_STATUS_FILE_NAME_ASC );
     	
 			bReturn = app->Options()->SetStringValue( "output_file", file_name );
 			if ( bReturn == false ) {
