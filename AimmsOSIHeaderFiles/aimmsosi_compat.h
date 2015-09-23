@@ -1,11 +1,11 @@
 // aimmsosi_compat.h
 //
-// Copyright (C) 2001-2009  Paragon Decision Technology B.V.
+// Copyright (C) 2001-2015  AIMMS B.V.
 // All Rights Reserved.
 //
 // This code is published under the Eclipse Public License.
 //
-// Last Modified : August 28, 2009
+// Last Modified : March 10, 2015
 //
 // $Id$
 
@@ -66,6 +66,13 @@
 #define AOSI_CAPAB2_RELOAD_MM      ISolverInfo::CAPAB2_RELOAD_MM   
 #define AOSI_CAPAB2_SEP_SPEC_ROW   ISolverInfo::CAPAB2_SEP_SPEC_ROW
 #define AOSI_CAPAB2_PASS_THROUGH   ISolverInfo::CAPAB2_PASS_THROUGH
+#define AOSI_CAPAB2_CALLBACK_LAZY  ISolverInfo::CAPAB2_CALLBACK_LAZY
+#define AOSI_CAPAB2_RUN_SEP_THR    ISolverInfo::CAPAB2_RUN_SEP_THR
+#define AOSI_CAPAB2_CP_FLOAT_EXP   ISolverInfo::CAPAB2_CP_FLOAT_EXP
+#define AOSI_CAPAB2_CP_ACTIVITY    ISolverInfo::CAPAB2_CP_ACTIVITY
+#define AOSI_CAPAB2_CP_FORB_ASNG   ISolverInfo::CAPAB2_CP_FORB_ASNG
+#define AOSI_CAPAB2_CON_VAR_PRIO   ISolverInfo::CAPAB2_CON_VAR_PRIO
+#define AOSI_CAPAB2_QP_AS_MIQP     ISolverInfo::CAPAB2_QP_AS_MIQP
 
 #define AOSI_COMPL_PATH            ISolverInfo::COMPL_PATH
 #define AOSI_COMPL_KNITRO          ISolverInfo::COMPL_KNITRO
@@ -116,6 +123,7 @@
 #define AOSI_MODEL_CONSTR_QUADRATIC     ISolverMathProgramInstance::MODEL_CONSTR_QUADRATIC
 #define AOSI_MODEL_CONSTR_QUAD_INT      ISolverMathProgramInstance::MODEL_CONSTR_QUAD_INT 
 #define AOSI_MODEL_MPCC                 ISolverMathProgramInstance::MODEL_MPCC            
+#define AOSI_MODEL_COP                  ISolverMathProgramInstance::MODEL_COP
 
 #define AOSI_MODEL_NEW                          ISolverMathProgramInstance::MODEL_NEW                
 #define AOSI_MODEL_UPDATE                       ISolverMathProgramInstance::MODEL_UPDATE             
@@ -235,6 +243,11 @@
 #define    AOSI_IPARAM_IS_ENCRYPTED             ISolverMathProgramInstance::IPARAM_IS_ENCRYPTED
 #define    AOSI_IPARAM_IS_QUADRATIC             ISolverMathProgramInstance::IPARAM_IS_QUADRATIC
 #define    AOSI_IPARAM_NR_MIP_STARTS            ISolverMathProgramInstance::IPARAM_NR_MIP_STARTS
+#define    AOSI_IPARAM_IS_SOCP                  ISolverMathProgramInstance::IPARAM_IS_SOCP
+#define    AOSI_IPARAM_LAZY_CALLBACK            ISolverMathProgramInstance::IPARAM_LAZY_CALLBACK  
+#define    AOSI_IPARAM_MAX_INSTRUCT             ISolverMathProgramInstance::IPARAM_MAX_INSTRUCT
+#define    AOSI_IPARAM_MAX_CONSTPOOL            ISolverMathProgramInstance::IPARAM_MAX_CONSTPOOL
+#define    AOSI_IPARAM_MAX_INT_CONSTP           ISolverMathProgramInstance::IPARAM_MAX_INT_CONSTP
 #define    AOSI_IPARAM_MAX                      ISolverMathProgramInstance::IPARAM_MAX             
 
 #define    AOSI_DPARAM_SIZE                     ISolverMathProgramInstance::DPARAM_SIZE            
@@ -255,10 +268,14 @@
 #define    AOSI_ISTAT_POSTSOLVE_CONT            ISolverMathProgramInstance::ISTAT_POSTSOLVE_CONT
 #define    AOSI_ISTAT_POSTSOLVE_INT             ISolverMathProgramInstance::ISTAT_POSTSOLVE_INT
 #define    AOSI_ISTAT_MIP_CALC_SENS             ISolverMathProgramInstance::ISTAT_MIP_CALC_SENS
+#define    AOSI_ISTAT_BRANCHES                  ISolverMathProgramInstance::ISTAT_BRANCHES
+#define    AOSI_ISTAT_FAILURES                  ISolverMathProgramInstance::ISTAT_FAILURES
+#define    AOSI_ISTAT_CALC_FARKAS               ISolverMathProgramInstance::ISTAT_CALC_FARKAS
 #define    AOSI_ISTAT_MAX                       ISolverMathProgramInstance::ISTAT_MAX
 
 #define    AOSI_DSTAT_OBJ                       ISolverMathProgramInstance::DSTAT_OBJ           
-#define    AOSI_DSTAT_LP_BEST                   ISolverMathProgramInstance::DSTAT_LP_BEST       
+#define    AOSI_DSTAT_LP_BEST                   ISolverMathProgramInstance::DSTAT_LP_BEST
+#define    AOSI_DSTAT_FARKAS_PROOF              ISolverMathProgramInstance::DSTAT_FARKAS_PROOF
 #define    AOSI_DSTAT_MAX                       ISolverMathProgramInstance::DSTAT_MAX           
 
 #define    AOSI_PROG_TYPE               IAimmsMathProgramCallback::PROG_TYPE            
@@ -270,6 +287,7 @@
 #define    AOSI_PROG_IP_CROSS_ITER      IAimmsMathProgramCallback::PROG_IP_CROSS_ITER    
 #define    AOSI_PROG_THREADS            IAimmsMathProgramCallback::PROG_THREADS
 #define    AOSI_PROG_MPS_TYPE           IAimmsMathProgramCallback::PROG_MPS_TYPE  
+#define    AOSI_PROG_QP_AS_MIQP         IAimmsMathProgramCallback::PROG_QP_AS_MIQP  
 #define    AOSI_PROG_IMAX               IAimmsMathProgramCallback::PROG_IMAX
 
 #define    AOSI_PROG_OBJ                IAimmsMathProgramCallback::PROG_OBJ           
@@ -316,6 +334,7 @@
 #define AOSI_CB_HEURISTIC               IAimmsMathProgramCallback::CB_HEURISTIC   
 #define AOSI_CB_INCUMBENT               IAimmsMathProgramCallback::CB_INCUMBENT   
 #define AOSI_CB_BRANCH                  IAimmsMathProgramCallback::CB_BRANCH      
+#define AOSI_CB_ADD_LAZY_CON            IAimmsMathProgramCallback::CB_ADD_LAZY_CON
                                                       
 #define   AOSI_CB_MODEL_STAT            IAimmsMathProgramCallback::CB_MODEL_STAT 
 #define   AOSI_CB_SOLVER_STAT           IAimmsMathProgramCallback::CB_SOLVER_STAT
@@ -325,6 +344,8 @@
 #define   AOSI_CB_NR_NODES              IAimmsMathProgramCallback::CB_NR_NODES
 #define   AOSI_CB_NR_BR_NODES           IAimmsMathProgramCallback::CB_NR_BR_NODES
 #define   AOSI_CB_NR_NODES_LEFT         IAimmsMathProgramCallback::CB_NR_NODES_LEFT
+#define   AOSI_CB_NR_BRANCHES           IAimmsMathProgramCallback::CB_NR_BRANCHES
+#define   AOSI_CB_NR_FAILURES           IAimmsMathProgramCallback::CB_NR_FAILURES
 #define   AOSI_CB_IMAX                  IAimmsMathProgramCallback::CB_IMAX       
 
 #define   AOSI_CB_OBJ                   IAimmsMathProgramCallback::CB_OBJ        
@@ -353,6 +374,7 @@
 #define AOSI_RETURN_PRE_STATUS_REDUNDANT      ISolverMathProgramInstance::PRE_STATUS_REDUNDANT
 
 #define AOSI_IOPT_progress_solution     IAimmsMathProgramInfo::IOPT_progress_solution 
+#define AOSI_IOPT_progress_interval     IAimmsMathProgramInfo::IOPT_progress_interval
 #define AOSI_IOPT_iteration_limit       IAimmsMathProgramInfo::IOPT_iteration_limit   
 #define AOSI_IOPT_time_limit            IAimmsMathProgramInfo::IOPT_time_limit        
 #define AOSI_IOPT_after_integer_sol     IAimmsMathProgramInfo::IOPT_after_integer_sol 
@@ -391,7 +413,10 @@
 #define AOSI_FLAGS_IS_FILTER            IAimmsMathProgramInfo::FLAGS_IS_FILTER       
 #define AOSI_FLAGS_MM_MODIFIED_UB       IAimmsMathProgramInfo::FLAGS_MM_MODIFIED_UB  
 #define AOSI_FLAGS_MM_MODIFIED_LB       IAimmsMathProgramInfo::FLAGS_MM_MODIFIED_LB  
-#define AOSI_FLAGS_MM_MODIFIED_TYPE     IAimmsMathProgramInfo::FLAGS_MM_MODIFIED_TYPE       
+#define AOSI_FLAGS_MM_MODIFIED_TYPE     IAimmsMathProgramInfo::FLAGS_MM_MODIFIED_TYPE
+#define AOSI_FLAGS_IS_ACTIVITY          IAimmsMathProgramInfo::FLAGS_IS_ACTIVITY        
+#define AOSI_FLAGS_IS_DUPL_SIZE_ROW     IAimmsMathProgramInfo::FLAGS_IS_DUPL_SIZE_ROW
+#define AOSI_FLAGS_IN_START_POINT       IAimmsMathProgramInfo::FLAGS_IN_START_POINT
 
 #define AOSI_NAME_COLUMN                IAimmsMathProgramInfo::NAME_COLUMN
 #define AOSI_NAME_ROW                   IAimmsMathProgramInfo::NAME_ROW   
@@ -411,6 +436,15 @@
 
 #define AOSI_DEF_IS_GONOMETRIC          IAimmsMathProgramNonLinearEvaluator::DEF_IS_GONOMETRIC
 #define AOSI_DEF_HAS_ERRORF             IAimmsMathProgramNonLinearEvaluator::DEF_HAS_ERRORF
+
+#define AOSI_ACT_SIZE_BINDING_LB        IAimmsMathProgramNonLinearEvaluator::ACT_SIZE_BINDING_LB
+#define AOSI_ACT_SIZE_BINDING_UB        IAimmsMathProgramNonLinearEvaluator::ACT_SIZE_BINDING_UB
+#define AOSI_ACT_LEN_BINDING_LB         IAimmsMathProgramNonLinearEvaluator::ACT_LEN_BINDING_LB
+#define AOSI_ACT_LEN_BINDING_UB         IAimmsMathProgramNonLinearEvaluator::ACT_LEN_BINDING_UB
+#define AOSI_ACT_START_BINDING_LB       IAimmsMathProgramNonLinearEvaluator::ACT_START_BINDING_LB
+#define AOSI_ACT_START_BINDING_UB       IAimmsMathProgramNonLinearEvaluator::ACT_START_BINDING_UB
+#define AOSI_ACT_END_BINDING_LB         IAimmsMathProgramNonLinearEvaluator::ACT_END_BINDING_LB
+#define AOSI_ACT_END_BINDING_UB         IAimmsMathProgramNonLinearEvaluator::ACT_END_BINDING_UB
 
 #define AOSI_MM_UB_CHANGED              IAimmsMathProgramMatrixManipulationInfo::MM_UB_CHANGED        
 #define AOSI_MM_LB_CHANGED              IAimmsMathProgramMatrixManipulationInfo::MM_LB_CHANGED        

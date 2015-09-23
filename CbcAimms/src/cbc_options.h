@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -42,6 +42,7 @@ enum {
     CBC_CAT_PRESOLVE,
     CBC_CAT_SIMPLEX,
     CBC_CAT_LOGGING,
+    CBC_CAT_HIDDEN,
     CBC_CAT_MAX
 };
 

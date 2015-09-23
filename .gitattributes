@@ -4,8 +4,8 @@ AimmsOSIHeaderFiles/IAimmsOSI.h -text
 AimmsOSIHeaderFiles/aimmsosi_compat.h -text
 CbcAimms/AUTHORS -text
 CbcAimms/INSTALL -text
-CbcAimms/MSVisualStudio/v8/libAimmsCbc.sln -text
-CbcAimms/MSVisualStudio/v8/libAimmsCbc.vcproj -text
+CbcAimms/MSVisualStudio/v10/libAimmsCbc.sln -text
+CbcAimms/MSVisualStudio/v10/libAimmsCbc.vcxproj -text
 CbcAimms/src/AimmsOSI-SolverCbcImpl.h -text
 CbcAimms/src/cbc_event.cpp -text
 CbcAimms/src/cbc_event.h -text

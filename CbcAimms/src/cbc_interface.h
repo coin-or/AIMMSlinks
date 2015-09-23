@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -46,22 +46,37 @@
 #define CBC_MM_MAX_ELEM    100              // Maximal number of matrix elements updates
                                             // for matrix manipulation in each call
 
-#if CBC_VERSION_MAJOR == 2 && CBC_VERSION_MINOR == 8 && CBC_VERSION_RELEASE == 0
-#define CBC_VERSION_NO        280
-#else
-#define CBC_VERSION_NO        275
+#if CBC_VERSION_MAJOR == 2
+ #if CBC_VERSION_MINOR == 9
+  #define CBC_VERSION_NO        290
+ #elif CBC_VERSION_MINOR == 8
+  #define CBC_VERSION_NO        280
+ #else
+  #define CBC_VERSION_NO        275
+ #endif
 #endif
 
-#if CBC_VERSION_NO == 280
-#define CBC_STATUS_FILE_NAME_ASC  "cbc280.sta"
-#define CBC_STATUS_FILE_NAME_UNI  _T("cbc280.sta")
-#define CBC_LOG_FILE_NAME     "cbc280.log"
-#define CBC_HELP_FILE_NAME    "AimmsCbc280.chm"
+#if CBC_VERSION_NO == 290
+ #undef CBC_VERSION
+ #define CBC_VERSION               "2.9"
+ 
+ #define CBC_STATUS_FILE_NAME_ASC  "cbc29.sta"
+ #define CBC_STATUS_FILE_NAME_UNI  _T("cbc29.sta")
+ #define CBC_LOG_FILE_NAME         "cbc29.log"
+ #define CBC_HELP_FILE_NAME        "AimmsCbc.chm"
+#elif CBC_VERSION_NO == 280
+ #undef CBC_VERSION
+ #define CBC_VERSION               "2.8.0"
+ 
+ #define CBC_STATUS_FILE_NAME_ASC  "cbc280.sta"
+ #define CBC_STATUS_FILE_NAME_UNI  _T("cbc280.sta")
+ #define CBC_LOG_FILE_NAME         "cbc280.log"
+ #define CBC_HELP_FILE_NAME        "AimmsCbc.chm"
 #else
-#define CBC_STATUS_FILE_NAME_ASC  "cbc.sta"
-#define CBC_STATUS_FILE_NAME_UNI  _T("cbc.sta")
-#define CBC_LOG_FILE_NAME     "cbc.log"
-#define CBC_HELP_FILE_NAME    "AimmsCbc.chm"
+ #define CBC_STATUS_FILE_NAME_ASC  "cbc.sta"
+ #define CBC_STATUS_FILE_NAME_UNI  _T("cbc.sta")
+ #define CBC_LOG_FILE_NAME         "cbc.log"
+ #define CBC_HELP_FILE_NAME        "AimmsCbc.chm"
 #endif
 
 #define CBC_LP_MODEL          0
@@ -78,6 +93,15 @@
 #define CBC_STATUS_NONBASIC_LB   3   // Non-basic at lower bound
 
 //#define CBC_PRINT_POSTSOLVE_MPS
+
+
+#ifdef LINUX64
+    #define portingIntFmtStr "%ld"
+#elif defined( _WIN64)
+    #define portingIntFmtStr "%I64d"
+#else
+    #define portingIntFmtStr "%d"
+#endif     
 
 
 typedef struct cbc_handle_record {

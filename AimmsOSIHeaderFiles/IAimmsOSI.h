@@ -1,11 +1,11 @@
 // IAimmsOSI.h
 //
-// Copyright (C) 2001-2009  Paragon Decision Technology B.V.
+// Copyright (C) 2001-2015  AIMMS B.V.
 // All Rights Reserved.
 //
 // This code is published under the Eclipse Public License.
 //
-// Last Modified : August 28, 2009
+// Last Modified : March 10, 2015
 //
 // $Id$
 
@@ -15,8 +15,26 @@
 #ifdef WIN32
 #include <tchar.h>
 #else // WIN32
-#define _TCHAR char
-#define _T(x) x
+  #ifdef	UNICODE
+    #include <wchar.h>
+	#ifndef _TCHAR_DEFINED
+		typedef wchar_t _TCHAR;
+		#define _TCHAR_DEFINED
+	#endif
+    #ifndef _T
+	  #define _R(x) L ## x
+      #define _T(x) _R(x)
+    #endif
+    #else // #ifdef UNICODE
+	#ifndef _TCHAR_DEFINED
+		typedef char _TCHAR;
+		#define _TCHAR_DEFINED
+	#endif
+
+      #ifndef _T
+	#define _T(x) x
+      #endif
+  #endif
 #endif // WIN32
 
 #ifdef LINUX64
@@ -33,7 +51,7 @@ class IAimmsMathProgramCallback;
 class IAimmsMathProgramMatrixManipulationInfo;
 class ISolverMathProgramInstance;
 
-#define AOSI_VERSION         20090414
+#define AOSI_VERSION         20150310
 
 #define AOSI_SUCCESS         0
 #define AOSI_FAILURE         1
@@ -108,24 +126,31 @@ public:
         };
         
         enum SolverCapability2 {
-            CAPAB2_NEW_OSI      = 0x00000001,
-            CAPAB2_INDICATOR    = 0x00000002,
-            CAPAB2_DIF_MIP_GAP  = 0x00000004,
-            CAPAB2_PARALLEL     = 0x00000008,
-            CAPAB2_RELOAD_QP    = 0x00000010,
-            CAPAB2_NO_ASYNCHR   = 0x00000020,
-            CAPAB2_PRESLV_INFO  = 0x00000040,
-            CAPAB2_LAZY_ROWS    = 0x00000080,
-            CAPAB2_CUT_POOL     = 0x00000100,
-            CAPAB2_FILTERS      = 0x00000200,
-            CAPAB2_EMPTY_FILE   = 0x00000400,
-            CAPAB2_TUNING       = 0x00000800,
-            CAPAB2_SOLVE_MPS    = 0x00001000,
-            CAPAB2_CALC_SUBGR   = 0x00002000,
-            CAPAB2_BRANCH_CB    = 0x00004000,
-            CAPAB2_RELOAD_MM    = 0x00008000,
-            CAPAB2_SEP_SPEC_ROW = 0x00010000,
-            CAPAB2_PASS_THROUGH = 0x00020000
+            CAPAB2_NEW_OSI       = 0x00000001,
+            CAPAB2_INDICATOR     = 0x00000002,
+            CAPAB2_DIF_MIP_GAP   = 0x00000004,
+            CAPAB2_PARALLEL      = 0x00000008,
+            CAPAB2_RELOAD_QP     = 0x00000010,
+            CAPAB2_NO_ASYNCHR    = 0x00000020,
+            CAPAB2_PRESLV_INFO   = 0x00000040,
+            CAPAB2_LAZY_ROWS     = 0x00000080,
+            CAPAB2_CUT_POOL      = 0x00000100,
+            CAPAB2_FILTERS       = 0x00000200,
+            CAPAB2_EMPTY_FILE    = 0x00000400,
+            CAPAB2_TUNING        = 0x00000800,
+            CAPAB2_SOLVE_MPS     = 0x00001000,
+            CAPAB2_CALC_SUBGR    = 0x00002000,
+            CAPAB2_BRANCH_CB     = 0x00004000,
+            CAPAB2_RELOAD_MM     = 0x00008000,
+            CAPAB2_SEP_SPEC_ROW  = 0x00010000,
+            CAPAB2_PASS_THROUGH  = 0x00020000,
+            CAPAB2_CALLBACK_LAZY = 0x00040000,
+            CAPAB2_RUN_SEP_THR   = 0x00080000,
+            CAPAB2_CP_FLOAT_EXP  = 0x00100000,
+            CAPAB2_CP_ACTIVITY   = 0x00200000,
+            CAPAB2_CP_FORB_ASNG  = 0x00400000,
+            CAPAB2_CON_VAR_PRIO  = 0x00800000,
+            CAPAB2_QP_AS_MIQP    = 0x01000000
         };
         
         enum ComplementarityType {
@@ -245,7 +270,8 @@ public:
             MODEL_MINLP            = 0x00000100,
             MODEL_CONSTR_QUADRATIC = 0x00000200,
             MODEL_CONSTR_QUAD_INT  = 0x00000400,
-            MODEL_MPCC             = 0x00000800
+            MODEL_MPCC             = 0x00000800,
+            MODEL_COP              = 0x00001000
         };
 
         enum SolveType {
@@ -341,6 +367,11 @@ public:
             IPARAM_IS_ENCRYPTED,
             IPARAM_IS_QUADRATIC,
             IPARAM_NR_MIP_STARTS,
+            IPARAM_IS_SOCP,
+            IPARAM_LAZY_CALLBACK,
+            IPARAM_MAX_INSTRUCT,
+            IPARAM_MAX_CONSTPOOL,
+            IPARAM_MAX_INT_CONSTP,
             IPARAM_MAX
         };
         
@@ -399,12 +430,16 @@ public:
             ISTAT_POSTSOLVE_CONT,
             ISTAT_POSTSOLVE_INT,
             ISTAT_MIP_CALC_SENS,
+            ISTAT_BRANCHES,
+            ISTAT_FAILURES,
+            ISTAT_CALC_FARKAS,
             ISTAT_MAX
         };
         
         enum DoubleMathProgramStatus{
             DSTAT_OBJ,
             DSTAT_LP_BEST,
+            DSTAT_FARKAS_PROOF,
             DSTAT_MAX
         };
 
@@ -534,11 +569,12 @@ public:
             IOPT_solver_messages       = -5,
             IOPT_max_domain_errors     = -6,
             IOPT_use_2D_order_der      = -7,
+            IOPT_progress_interval     = -8,
 #ifdef DEBUG
-            IOPT_solver_tracing        = -8,
-            IOPT_MAX                   =  8
+            IOPT_solver_tracing        = -9,
+            IOPT_MAX                   =  9
 #else
-            IOPT_MAX                   =  7
+            IOPT_MAX                   =  8
 #endif
         };
 
@@ -574,13 +610,29 @@ public:
             FLAGS_IS_FILTER        = 0x00004000,
             FLAGS_MM_MODIFIED_UB   = 0x00008000,
             FLAGS_MM_MODIFIED_LB   = 0x00010000,
-            FLAGS_MM_MODIFIED_TYPE = 0x00020000
+            FLAGS_MM_MODIFIED_TYPE = 0x00020000,
+            FLAGS_IS_ACTIVITY      = 0x00040000,
+            FLAGS_IS_DUPL_SIZE_ROW = 0x00080000,
+            FLAGS_IN_START_POINT   = 0x00100000
         };
 
         enum IdentifierName {
             NAME_COLUMN  ,
             NAME_ROW     ,
             NAME_MODEL   
+        };
+        
+        enum RowType {
+            ROW_TYPE_EQ          ,
+            ROW_TYPE_NE          ,
+            ROW_TYPE_LE          ,
+            ROW_TYPE_LT          ,
+            ROW_TYPE_GE          ,
+            ROW_TYPE_GT          ,
+            ROW_TYPE_RANGED_LE_LE,
+            ROW_TYPE_RANGED_LE_LT,
+            ROW_TYPE_RANGED_LT_LE,
+            ROW_TYPE_RANGED_LT_LT,
         };
         
         virtual ~IAimmsMathProgramInfo() {}
@@ -701,7 +753,7 @@ public:
                 _LONG_T   *len) = 0;
 
         virtual void * AllocateMemory(
-                _LONG_T    size) = 0;
+                size_t     size) = 0;
         virtual void FreeMemory(
                 void      *ptr) = 0;
 
@@ -736,6 +788,19 @@ public:
         virtual class IAimmsMathProgramNonLinearEvaluator *GetNonLinearEvaluator() = 0;
         virtual class IAimmsMathProgramCallback *GetSolverCallback() = 0;
         virtual class IAimmsExtendedMathProgramInfo *GetExtendedMathProgramInfo() = 0;
+        
+        virtual _LONG_T GetColumnStart(
+                int        max_no,
+                double     level[],
+                _LONG_T    basis[]) = 0;
+        virtual _LONG_T GetRowStart(
+                int        max_no,
+                double     level[],
+                _LONG_T    basis[]) = 0;
+         
+        virtual _LONG_T GetRowType(
+                int        row_no,
+                int       *row_type) = 0;
 };
 
 
@@ -747,6 +812,17 @@ public:
         enum RowDefinitionProperty {
         	DEF_IS_GONOMETRIC = 0x00000001,
             DEF_HAS_ERRORF    = 0x00000002
+        };
+        
+        enum ActivityFlag {
+        	ACT_SIZE_BINDING_LB  = 0x00000001,
+            ACT_SIZE_BINDING_UB  = 0x00000002,
+            ACT_LEN_BINDING_LB   = 0x00000004,
+            ACT_LEN_BINDING_UB   = 0x00000008,
+            ACT_START_BINDING_LB = 0x00000010,
+            ACT_START_BINDING_UB = 0x00000020,
+            ACT_END_BINDING_LB   = 0x00000040,
+            ACT_END_BINDING_UB   = 0x00000080
         };
         
         virtual _LONG_T EvaluateRow(
@@ -785,6 +861,39 @@ public:
                 int        is_first,
                 int        is_last,
                 int       *flags) = 0;
+        virtual _LONG_T GetNonlinearInstructions(
+                int        rowno,
+                int        max_no_instructions,
+                int       *no_instructions,
+                int        operands[],
+                short      operator_codes[],
+                int        max_no_constpool,
+                int       *no_constpool,
+                double     constpool[],
+                int        max_no_int_constpool,
+                int       *no_int_constpool,
+                int        int_constpool[],
+                int       *nlp_type,
+                int       *nlp_flags) = 0;
+   		virtual _LONG_T GetActivityInfo(
+                int     colno,
+                int    *beginIsFixed,
+                int    *beginColumnNumberOrValue,
+                int    *beginAbsentValue,
+                int    *endIsFixed,
+                int    *endColumnNumberOrValue,
+                int    *endAbsentValue,
+                int    *lengthIsFixed,
+                int    *lengthColumnNumberOrValue,
+                int    *lengthAbsentValue,
+                int    *sizeIsFixed,
+                int    *sizeColumnNumberOrValue,
+                int    *sizeAbsentValue,
+                int    *presentisFixed,
+                int    *presentColumnNumberOrValue,
+                int    *givenSizeValue,
+                int    *contiguousScheduleDomain,
+                int    *act_flags) = 0;
 };
 
 #define AOSI_MAX_ERROR_LEN         256
@@ -832,7 +941,8 @@ public:
             CB_ADD_CUT      = 0x00000008,
             CB_HEURISTIC    = 0x00000010,
             CB_INCUMBENT    = 0x00000020,
-            CB_BRANCH       = 0x00000040
+            CB_BRANCH       = 0x00000040,
+            CB_ADD_LAZY_CON = 0x00000080
         };
 
         enum IntegerProgressInfo {
@@ -845,6 +955,7 @@ public:
             PROG_IP_CROSS_ITER,
             PROG_THREADS,
             PROG_MPS_TYPE,
+            PROG_QP_AS_MIQP,
             PROG_IMAX
         };
         
@@ -866,6 +977,8 @@ public:
             CB_NR_NODES,
             CB_NR_BR_NODES,
             CB_NR_NODES_LEFT,
+            CB_NR_BRANCHES,
+            CB_NR_FAILURES,
             CB_IMAX
         };
         

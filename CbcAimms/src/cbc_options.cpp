@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -34,7 +34,8 @@ static char *cbc_category[] = {
 #endif
     "Presolve",
     "Simplex",
-    "Logging"
+    "Logging",
+    "Hidden"
 };
 
 
@@ -108,7 +109,11 @@ static int  cbc_int_opt_def[ CBC_OPT_INT_MAX ] = {
 /* CBC_OPT_BARRIER_CROSSOVER             */   1,
 /* CBC_OPT_BARRIER_SCALING               */   0,
 /* CBC_OPT_CLIQUE_CUTS                   */   3,
+#if CBC_VERSION_NO >= 290
+/* CBC_OPT_COMBINE_SOLUTIONS             */   0,
+#else
 /* CBC_OPT_COMBINE_SOLUTIONS             */   1,
+#endif
 /* CBC_OPT_CRASH                         */   0,
 /* CBC_OPT_CUT_DEPTH                     */  -1,
 /* CBC_OPT_CUT_PASSES_ROOT_NODE          */  -1,
@@ -477,7 +482,7 @@ static cbc_option_rec  cbc_int_options[] = {
   0, "LP_method"                         , NULL                                                         },
 { CBC_OPT_MIP_BASIS                   , CBC_CAT_MIP      , 0 , 1 , akeyw_off_on      , NULL             ,
   0, "MIP_basis"                         , NULL                                                         },
-{ CBC_OPT_MIP_CALCULATE_BASIS_AND_MARG, CBC_CAT_MIP      , 0 , 1 , akeyw_off_on      , NULL             ,
+{ CBC_OPT_MIP_CALCULATE_BASIS_AND_MARG, CBC_CAT_HIDDEN   , 0 , 1 , akeyw_off_on      , NULL             ,
   0, "MIP_calculate_basis_and_marginals" , NULL                                                         },
 { CBC_OPT_MIP_PRESOLVE                , CBC_CAT_MIP      , 0 , 1 , akeyw_mip_preslv  , ckeyw_mip_preslv ,
   0, "MIP_presolve"                      , "-preprocess"                                                },
@@ -495,9 +500,9 @@ static cbc_option_rec  cbc_int_options[] = {
   0, "Output_level"                      , "-slogLevel"                                                 },
 { CBC_OPT_PERTURBATION                , CBC_CAT_GENERAL  , 0 , 1 , akeyw_off_on      , NULL             ,
   0, "Perturbation"                      , "-perturbation"                                              },
-{ CBC_OPT_POSTSOLVE_CONT              , CBC_CAT_GENERAL  , 0 , 1 , akeyw_postslv_cont, NULL             ,
+{ CBC_OPT_POSTSOLVE_CONT              , CBC_CAT_HIDDEN   , 0 , 1 , akeyw_postslv_cont, NULL             ,
   0, "Postsolve_continuous_variables"    , NULL                                                         },
-{ CBC_OPT_POSTSOLVE_INT               , CBC_CAT_MIP      , 0 , 1 , akeyw_postslv_int , NULL             ,
+{ CBC_OPT_POSTSOLVE_INT               , CBC_CAT_HIDDEN   , 0 , 1 , akeyw_postslv_int , NULL             ,
   0, "Postsolve_integer_variables"       , NULL                                                         },
 { CBC_OPT_PRESOLVE                    , CBC_CAT_PRESOLVE , 0 , 1 , akeyw_presolve    , NULL             ,
   0, "Presolve"                          , "-presolve"                                                  },
@@ -625,22 +630,23 @@ void CbcMathProgramInstance::cbc_init_global_options( void )
 {
 	// Set global option variables equal to their corresponding AIMMS default value.
 	
-	cbc_progress         = 100;
-	cbc_opt_iter_limit   = CBC_INT_MAX;
-    cbc_opt_time_limit   = CBC_INT_MAX;
-    cbc_opt_integer_sols = -1;
-    cbc_opt_priority     = AOSI_PRIO_ALWAYS;
+	cbc_progress          = 0;
+	cbc_progress_interval = 200;   // AIMMS default (translated to milli-seconds)
+	cbc_opt_iter_limit    = CBC_INT_MAX;
+    cbc_opt_time_limit    = CBC_INT_MAX;
+    cbc_opt_integer_sols  = -1;
+    cbc_opt_priority      = AOSI_PRIO_ALWAYS;
 #ifdef DEBUG
-    cbc_opt_tracing      = 0;
+    cbc_opt_tracing       = 0;
 #endif
     
-    cbc_mip_absolute_gap = 1e-13;
-    cbc_mip_relative_gap = 0.0;
-    cbc_mip_cutoff       = AOSI_NA_REP;
+    cbc_mip_absolute_gap  = 1e-13;
+    cbc_mip_relative_gap  = 0.0;
+    cbc_mip_cutoff        = AOSI_NA_REP;
     
     // Set initial solver phase.
     
-    cbc_lp_phase         = AOSI_PHASE_DUAL_SIMPLEX;
+    cbc_lp_phase          = AOSI_PHASE_DUAL_SIMPLEX;
 }
 
 
@@ -698,6 +704,9 @@ int CbcMathProgramInstance::cbc_get_options( void )
                 break;
               case AOSI_IOPT_progress_solution:
                 cbc_progress = opt_int[i];
+                break;
+              case AOSI_IOPT_progress_interval:
+                cbc_progress_interval = 100 * opt_int[i];
                 break;
               case AOSI_IOPT_after_integer_sol:
                 cbc_opt_integer_sols = opt_int[i];
@@ -890,7 +899,7 @@ int CbcMathProgramInstance::cbc_set_options( std::list<std::string>& opt_list )
     	dval = 1.0e30;
     } else {
     	if ( cbc_handle . direction == DIRECTION_MAX ) {
-			dval = ( cbc_handle . obj_constant - cbc_mip_cutoff ) * cbc_handle . obj_multiplier;
+			dval = cbc_handle . obj_constant - cbc_mip_cutoff;
     	} else {
     		dval = cbc_mip_cutoff - cbc_handle . obj_constant;
     	}

@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -187,6 +187,11 @@ public:
 	int     cbc_progress;                 // Number of iterations after which a progress
 	                                      // report should be sent to AIMMS. If its value
 	                                      // is 0, no progress reports are made
+	int     cbc_progress_interval;        // Time (in 1/100th of a second) after which a progress
+	                                      // report should be sent to AIMMS. If its value is 0,
+	                                      // no progress additional reports are made
+	int     cbc_next_to_print_time;       // Next time (in 1/100th of a second) for which
+	                                      // a progress should be printed
 	double *cbc_incumbent;                // Pointer to incumbent solution in CBC; can be
 	                                      // NULL
 	int     cbc_nr_preproc_cols;          // Number of columns after preprocessing
@@ -228,6 +233,7 @@ public:
 
 public:
 	IAimmsMathProgramCallback * get_callback() { return m_callback; };
+	IAimmsMathProgramInfo * get_mp() { return m_mp; };
 	
 	void cbc_error( char *errmsg );
 	size_t cbc_get_memory_used( void );

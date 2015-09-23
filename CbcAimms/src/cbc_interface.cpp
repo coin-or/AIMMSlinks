@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Paragon Decision Technology B.V. and others.
+// Copyright (C) 2009 AIMMS B.V. and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -9,7 +9,9 @@
 #include "cbc_interface.h"
 #include "cbc_options.h"
 #include "cbc_event.h"
-#include <pdttchar.h>
+
+  
+
 
 // The function GetSolverInfo()
 // The function CbcMathProgramInstance()
@@ -133,8 +135,9 @@ CbcMathProgramInstance::CbcMathProgramInstance(IAimmsMathProgramInfo *mp, IAimms
     
     cbc_current = &cbc_handle;
     
-    cbc_user_interrupt = false;
-    cbc_opt_priority   = AOSI_PRIO_ERROR;
+    cbc_user_interrupt   = false;
+    cbc_opt_priority     = AOSI_PRIO_ERROR;
+    cbc_inside_postsolve = false;
 }
 
 
@@ -331,7 +334,7 @@ void CbcMathProgramInstance::cbc_progress_info( bool end )
 	
     prog_int[ AOSI_PROG_TYPE          ] = type;
     prog_int[ AOSI_PROG_ITER          ] = cbc_handle . iter;
-    prog_int[ AOSI_PROG_NODES_SOLVED  ] = ( is_integer_model ) ?
+    prog_int[ AOSI_PROG_NODES_SOLVED  ] = ( is_integer_model || cbc_inside_postsolve ) ?
                                           cbc_handle . nodes : 0;
     prog_int[ AOSI_PROG_NODES_LEFT    ] = -1;   // Not supported by CBC
     prog_int[ AOSI_PROG_END           ] = end;
@@ -377,19 +380,20 @@ void CbcMathProgramInstance::cbc_install_callback()
 	// passing incumbent solutions if callback is installed in AIMMS
 	// project (MIP only).
     
-    if ( cbc_progress > 0 ) {
+    if ( ( cbc_progress > 0          ) ||
+         ( cbc_progress_interval > 0 ) ) {
+        OsiSolverInterface * solver = cbc_model->solver();
+    	OsiClpSolverInterface * clpSolver = dynamic_cast<OsiClpSolverInterface *> (solver);
+    	ClpSimplex * clpSimplex = clpSolver->getModelPtr();
+    	
+    	MyEventHandler eventHandler( this );
+    	
+    	clpSimplex->passInEventHandler( &eventHandler );
+        
     	if ( cbc_handle . model_type == CBC_MIP_MODEL ) {
-    		MyEventHandler3 eventHandler( cbc_model, this );
+    		MyEventHandler3 eventHandler3( cbc_model, this );
     		
-    		cbc_model->passInEventHandler( &eventHandler );
-    	} else {
-    		OsiSolverInterface * solver = cbc_model->solver();
-    		OsiClpSolverInterface * clpSolver = dynamic_cast<OsiClpSolverInterface *> (solver);
-    		ClpSimplex * clpSimplex = clpSolver->getModelPtr();
-    		
-    		MyEventHandler eventHandler( this );
-    		
-    		clpSimplex->passInEventHandler( &eventHandler );
+    		cbc_model->passInEventHandler( &eventHandler3 );
     	}
 	}
 }
@@ -874,9 +878,17 @@ int CbcMathProgramInstance::cbc_is_feasible_solution( void )
 	
 	memset( x, 0, ncols * sizeof(double) );
 	
-	for ( i=0; i<cbc_nr_preproc_cols; i++ ) {
-		x[cbc_original_cols[i]] = cbc_incumbent[i];
-	}
+	if ( cbc_original_cols ) {
+		for ( i=0; i<cbc_nr_preproc_cols; i++ ) {
+			x[cbc_original_cols[i]] = cbc_incumbent[i];
+		}
+	} else if ( cbc_nr_preproc_cols == ncols ) {
+		for ( i=0; i<ncols; i++ ) {
+			x[i] = cbc_incumbent[i];
+		}
+	} else {
+    	return 0;
+    }
 	
 	// Read and pass matrix column wise.
     
@@ -1067,7 +1079,7 @@ int CbcMathProgramInstance::cbc_write_mps( void )
     
     if ( ( do_mps || do_lp          ) &&
          ( cbc_seq_number < 1000000 ) ) {
-        sprintf( mps_filename, "%scbc%05ld", cbc_project_dir, cbc_seq_number );
+        sprintf( mps_filename, "%scbc%05d", cbc_project_dir, cbc_seq_number );
         
         if ( cbc_handle . direction == DIRECTION_MAX ) {
 #if CBC_VERSION_NO >= 280
@@ -1517,7 +1529,7 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
         if ( col_bas == NULL ) {
             sprintf( cbc_msg, "Not enough memory for setting basis\n"
                      "Required amount of memory: %d bytes",
-                     (ncols + nrows) * sizeof( int ) );
+                     static_cast<int>( (ncols + nrows) * sizeof( int ) ) );
             cbc_error( cbc_msg );
             m_mp->FreeMemory( model_area );
             return 1;
@@ -1527,7 +1539,7 @@ int CbcMathProgramInstance::cbc_load_model( _LONG_T *int_param )
         if ( row_bas == NULL ) {
             sprintf( cbc_msg, "Not enough memory for setting basis\n"
                      "Required amount of memory: %d bytes", 
-                     (ncols + nrows) * sizeof( int ) );
+                     static_cast<int>( (ncols + nrows) * sizeof( int ) ) );
             cbc_error( cbc_msg );
             m_mp->FreeMemory( col_bas );
             m_mp->FreeMemory( model_area );
@@ -2548,9 +2560,11 @@ void CbcMathProgramInstance::cbc_init_solve( _LONG_T *int_param, double *dbl_par
                                    AIMMS_INF : -AIMMS_INF;
     cbc_handle . obj_best        = cbc_handle . objval;
     cbc_handle . mip_best_poss   = cbc_handle . objval;
-    cbc_handle . obj_multiplier  = 1.0;
     cbc_handle . iter            = 0;
-    cbc_handle . nodes           = 0;
+    if ( ! cbc_inside_postsolve ) {
+    	cbc_handle . nodes          = 0;
+    	cbc_handle . obj_multiplier = 1.0;
+    }
     cbc_handle . nodes_left      = 0;
     cbc_handle . phase           = -1;
     cbc_handle . is_feasible     = false;
@@ -2560,8 +2574,8 @@ void CbcMathProgramInstance::cbc_init_solve( _LONG_T *int_param, double *dbl_par
     cbc_incumbent                = NULL;
     cbc_nr_preproc_cols          = 0;
 	cbc_original_cols            = NULL;
-    cbc_inside_postsolve         = false;
     cbc_next_to_print_iter       = cbc_progress;
+    cbc_next_to_print_time       = cbc_start_time;
 	
 #ifdef WIN32
     MEMORYSTATUS   stat;
@@ -2646,7 +2660,10 @@ int CbcMathProgramInstance::cbc_get_solution_info_lp( void )
     // Get solution information (objective, solver status, etc).
     
     cbc_handle . objval = cbc_handle . obj_multiplier * solver->getObjValue();
-    cbc_handle . nodes  = 0;
+    
+    if ( ! cbc_inside_postsolve ) {
+    	cbc_handle . nodes  = 0;
+    }
     
     // Getting number of iterations using getIterationCount() does not work if
     // a postsolve is done (by CBC/CLP). The callback using the ClpEventHandler
@@ -3511,9 +3528,9 @@ void CbcMathProgramInstance::DoSolve(
     
     // Current settings of postsolve options for CBC.
     
-    int_stat[ AOSI_ISTAT_POSTSOLVE_CONT ] = cbc_int_opt_val[CBC_OPT_POSTSOLVE_CONT];
-    int_stat[ AOSI_ISTAT_POSTSOLVE_INT  ] = cbc_int_opt_val[CBC_OPT_POSTSOLVE_INT];
-    int_stat[ AOSI_ISTAT_MIP_CALC_SENS  ] = cbc_int_opt_val[CBC_OPT_MIP_CALCULATE_BASIS_AND_MARG];
+    int_stat[ AOSI_ISTAT_POSTSOLVE_CONT ] = 1;
+    int_stat[ AOSI_ISTAT_POSTSOLVE_INT  ] = 1;
+    int_stat[ AOSI_ISTAT_MIP_CALC_SENS  ] = 1;
     
     // Like most solvers, CBC does not take care of the constant in the AIMMS
     // objective function. Value AOSI_DSTAT_OBJ is handled by AIMMS but value
@@ -3530,11 +3547,7 @@ void CbcMathProgramInstance::DoSolve(
     }
 	
     if ( type == AOSI_MODEL_NEW ) {
-#ifdef _WIN64
-        sprintf( cbc_msg, "Memory in use by CBC %s: %I64d bytes.",
-#else
-        sprintf( cbc_msg, "Memory in use by CBC %s: %d bytes.",
-#endif
+        sprintf( cbc_msg, "Memory in use by CBC %s: " portingIntFmtStr " bytes.",
                  CBC_VERSION, int_stat[ AOSI_ISTAT_MEM_USED ] );
         m_gen->PassMessage( AOSI_PRIO_REMARK, cbc_msg );
     }
@@ -3565,15 +3578,21 @@ void CbcMathProgramInstance::cbc_get_col_sol_during_callback( _LONG_T first_col,
         
         memset( lev, 0, ncols * sizeof( double ) );
         
-        if ( cbc_incumbent && cbc_original_cols ) {
-        	for ( i=0; i<cbc_nr_preproc_cols; i++ ) {
-        		colno = cbc_original_cols[i];
-        		if ( colno >= first_col ) {
-        			if ( colno <= last_col ) {
-        				lev[colno-first_col] = cbc_incumbent[i];
-        			} else {
-        				break;
+        if ( cbc_incumbent ) {
+        	if ( cbc_original_cols ) {
+        		for ( i=0; i<cbc_nr_preproc_cols; i++ ) {
+        			colno = cbc_original_cols[i];
+        			if ( colno >= first_col ) {
+        				if ( colno <= last_col ) {
+        					lev[colno-first_col] = cbc_incumbent[i];
+        				} else {
+        					break;
+        				}
         			}
+        		}
+        	} else if ( cbc_nr_preproc_cols == cbc_handle . ncols ) {
+        		for ( i=0; i<ncols; i++ ) {
+        			lev[i] = cbc_incumbent[first_col + i];
         		}
         	}
         }
@@ -4181,11 +4200,7 @@ void CbcMathProgramInstance::DoMpsSolve(
         dbl_stat[ AOSI_DSTAT_LP_BEST ] = cbc_handle . mip_best_poss;
     }
 	
-#ifdef _WIN64
-    sprintf( cbc_msg, "Memory in use by CBC %s: %I64d bytes.",
-#else
-    sprintf( cbc_msg, "Memory in use by CBC %s: %d bytes.",
-#endif
+    sprintf( cbc_msg, "Memory in use by CBC %s: " portingIntFmtStr " bytes.",
              CBC_VERSION, int_stat[ AOSI_ISTAT_MEM_USED ] );
     m_gen->PassMessage( AOSI_PRIO_REMARK, cbc_msg );
 }
