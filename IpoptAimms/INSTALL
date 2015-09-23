@@ -17,8 +17,7 @@ For installation of an AIMMS system, see the file INSTALL in the AIMMSlinks dire
 
 == 1. Download and install IPOPT ==
 
-Download IPOPT DLL binaries from http://www.coin-or.org/download/binary/Ipopt/: Ipopt-X.Y.Z-win32-dll.zip
-for Windows 32 bits (e.g., Ipopt-3.8.1-win32-dll.zip) or Ipopt-X.Y.Z-win64-dll.zip for Windows 64 bits.
+Download IPOPT DLL binaries from http://www.coin-or.org/download/binary/Ipopt/: Ipopt-3.11.0-Win32-Win64-dll.7z.
 
 Unpack the zip file in the IpoptAimms directory. After unpacking the zip file the directory structure of the
 IpoptAimms directory should be:
@@ -31,7 +30,7 @@ IpoptAimms directory should be:
          - debug
          - release
      - MSVisualStudio
-       - v8
+       - v10
      - src
 
 The IPOPT dll is built using the third party components BLAS and LAPACK. The IPOPT dll includes the public
@@ -55,18 +54,14 @@ between the linear solvers MUMPS, MA27 (HSL) and Pardiso where MUMPS is the defa
 linear solver that is not available then the solve will fail. To add other linear solvers you should configure
 the AimmsIpoptConfig.h file in the src directory.
 
-Build the code using Microsoft Visual Studio Interactive Development Environment (IDE) version 8 or higher by
-opening the project file libAimmsIpopt.vcproj inside the IpoptAimms\MSVisualStudio\v8 directory.
-
-The AIMMS-IPOPT dll built by default is for an AIMMS ASCII version. To build a dll for AIMMS Unicode, change
-the value of 'Character Set' inside the project file (in Configuration Properties - General) into
-'Use Unicode Character Set'.
+Build the code using Microsoft Visual Studio Interactive Development Environment (IDE) version 10 or higher by
+opening the project file libAimmsIpopt.vcproj inside the IpoptAimms\MSVisualStudio\v10 directory.
 
 
 == 3. Add IPOPT to AIMMS ==
 
 a. Copy the libAimmsIpopt.dll file to the Solvers directory of your AIMMS installation.
-b. Copy the IPOPT dll in IpoptAimms\lib, e.g., IpoptAimms\lib\win32\release\Ipopt38.dll to the Solvers directory
+b. Copy the IPOPT dll in IpoptAimms\lib, e.g., IpoptAimms\lib\win32\release\IpOpt-vc10.dll to the Solvers directory
    of your AIMMS installation.
 
 Please note that the debug and release versions of the Ipopt DLL are *not* binary compatible, because the MSVC
